@@ -30,7 +30,7 @@ UserSchema.methods.comparePassword = async function (candidatePassword: string) 
     const user = this as UserDocument
     return bcrypt.compare(candidatePassword, user.password).catch((e)=> false)
 }
-UserSchema.pre('save', async function (next:  mongoose.HookNextFunction) {
+UserSchema.pre('save', async function (next: any) {
     let user = this as UserDocument
 
     // only hash the password if it has been modified (or is new)
