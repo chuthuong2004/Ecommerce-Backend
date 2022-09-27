@@ -1,0 +1,175 @@
+import { DocumentDefinition, FilterQuery, UpdateQuery } from "mongoose";
+import { ActionFavorite } from "../controllers/product.controller";
+import log from "../logger";
+import BrandModel from "../models/brand.model";
+import { CatalogDocument } from "../models/catalog.model";
+import CategoryModel from "../models/category.model";
+import ProductModel, { ProductDocument } from "../models/product.model";
+import UserModel, { Favorite } from "../models/user.model";
+import APIFeatures, { QueryOption } from "../utils/ApiFeatures";
+
+export async function createProduct(
+  input: DocumentDefinition<ProductDocument>
+) {
+  try {
+    const product = new ProductModel(input);
+    await product.save();
+    await CategoryModel.updateOne(
+      {
+        _id: input.category,
+      },
+      {
+        $push: { products: product._id },
+      }
+    );
+    await BrandModel.updateOne(
+      {
+        _id: input.brand,
+      },
+      {
+        $push: { products: product._id },
+      }
+    );
+    return product;
+  } catch (error) {
+    throw error;
+  }
+}
+export async function getAllProduct(
+  query: QueryOption
+): Promise<Array<CatalogDocument>> {
+  try {
+    const features = new APIFeatures(ProductModel.find(), query)
+      .paginating()
+      .sorting()
+      .searching()
+      .filtering();
+    return await features.query;
+  } catch (error) {
+    throw error;
+  }
+}
+export async function getProduct(productId: string) {
+  try {
+    const product = await ProductModel.findById(productId)
+      .populate("brand")
+      .populate("category");
+    return product;
+  } catch (error) {
+    throw error;
+  }
+}
+
+// * update product --- DONE
+export async function updateProduct(
+  productId: string,
+  update: UpdateQuery<ProductDocument>
+): Promise<ProductDocument | null> {
+  try {
+    // kiểm tra nếu update có ID brand thì xóa product khỏi brand cũ và add product vào brand mới
+    const product = await ProductModel.findById(productId);
+    if (update.brand) {
+      // xử lý cập nhật lại brand
+      const newBrand = await BrandModel.findById(update.brand);
+      // nếu brand mới này mà chưa có product thì update lại brand
+      if (!newBrand?.products.includes(productId)) {
+        // Thêm product vào brand mới
+        await BrandModel.updateOne(
+          {
+            _id: update.brand,
+          },
+          {
+            $push: { products: productId },
+          }
+        );
+        // xóa product khỏi brand cũ
+        await BrandModel.updateOne(
+          {
+            _id: product?.brand,
+          },
+          { $pull: { products: productId } }
+        );
+      }
+    }
+    if (update.category) {
+      // xử lý cập nhật lại category
+      const newCategory = await CategoryModel.findById(update.category);
+      // nếu category mới này mà chưa có product thì update lại category
+      if (!newCategory?.products.includes(productId)) {
+        // Thêm product vào category mới
+        await CategoryModel.updateOne(
+          {
+            _id: update.category,
+          },
+          {
+            $push: { products: productId },
+          }
+        );
+        // xóa product khỏi brand cũ
+        await CategoryModel.updateOne(
+          {
+            _id: product?.category,
+          },
+          { $pull: { products: productId } }
+        );
+      }
+    }
+    return await ProductModel.findByIdAndUpdate(productId, update, {
+      new: true,
+    });
+  } catch (error) {
+    throw error;
+  }
+}
+
+// * xử lý yêu thích sản phẩm --- DONE
+export async function handleFavorite(
+  productId: string,
+  userId: string,
+  actionFavorite: string,
+  favorite?: Favorite | null
+): Promise<ProductDocument | null> {
+  try {
+    let updateProduct =
+      actionFavorite === ActionFavorite.ADD
+        ? { $addToSet: { favorites: userId } }
+        : { $pull: { favorites: userId } };
+    const [product, user] = await Promise.all([
+      ProductModel.findByIdAndUpdate(
+        productId,
+        updateProduct, // nếu product chưa có userId này thì add vào,
+        { new: true }
+      ),
+      UserModel.findById(userId),
+    ]);
+    if (!product) return null;
+    product.likeCount = product.favorites.length; // gán lại lượt thích bằng độ dài của mảng favorites
+
+    // nếu không truyền vào favorite thì sẽ lấy favorite phần tử thứ 0 của product
+    if (actionFavorite === ActionFavorite.ADD && !favorite) {
+      favorite = {
+        product: product._id,
+        color: product.colors[0].colorName,
+        colorId: product.colors[0]?._id,
+        size: product.colors[0].sizes[0].size,
+        quantity: 1,
+      };
+    }
+    // tìm xem product này đã có trong favorite nào của user không nếu có trả về 1 Favorite còn không trả về undefined
+    const favoriteForUser = user?.favorites?.find(
+      (favorite: Favorite) => favorite.product == productId
+    );
+    let updateUser;
+
+    if (actionFavorite === ActionFavorite.ADD && !favoriteForUser) {
+      updateUser = { $push: { favorites: favorite } };
+    } else if (actionFavorite === ActionFavorite.REMOVE && favoriteForUser) {
+      updateUser = { $pull: { favorites: favoriteForUser } };
+    }
+    // nếu không có favorite thì mới thêm vào user
+    await UserModel.findByIdAndUpdate(userId, updateUser, { new: true });
+    return await product.save();
+  } catch (error) {
+    throw error;
+  }
+}
