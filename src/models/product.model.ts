@@ -9,7 +9,7 @@ import slugify from "slugify";
 
 interface ISize {
   size: string | number;
-  quantity: string;
+  quantity: number;
 }
 export interface IColor {
   images: Array<string>;
@@ -23,7 +23,7 @@ export interface IColor {
 }
 export enum EGenderType {
   Woman = "woman",
-  Man = "men",
+  Man = "man",
   Kid = "kid",
   Unisex = "unisex",
 }
