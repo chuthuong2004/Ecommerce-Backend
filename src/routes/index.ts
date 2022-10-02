@@ -5,6 +5,7 @@ import catalog from "./catalog.route";
 import category from "./category.route";
 import upload from "./upload.route";
 import brand from "./brand.route";
+import cart from "./cart.route";
 const router = express.Router();
 
 router.use("/api/v1", user);
@@ -13,4 +14,5 @@ router.use("/api/v1", catalog);
 router.use("/api/v1", category);
 router.use("/api/v1", upload);
 router.use("/api/v1", brand);
+router.use("/api/v1", cart);
 export default router;

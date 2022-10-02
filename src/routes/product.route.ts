@@ -20,6 +20,7 @@ import {
 } from "../schemas/product.schema";
 const router = express.Router();
 
+// * CREATE PRODUCT --- DONE
 router.post(
   "/admin/product/new",
   [requiresAdmin, validateRequest(createProductSchema)],
@@ -28,14 +29,14 @@ router.post(
 
 router.get("/products", getAllProductHandler);
 
-// * GET PRODUCT DETAIL
+// * GET PRODUCT DETAIL --- DONE
 router.get(
   "/product/:productId",
   validateRequest(getProductSchema),
   getProductHandler
 );
 
-// * UPDATE PRODUCT ---- ADMIN
+// * UPDATE PRODUCT ---- ADMIN ---DONE
 router.put(
   "/admin/product/:productId",
   [requiresAdmin, validateRequest(updateProductSchema)],
@@ -43,11 +44,13 @@ router.put(
 );
 
 // * UPDATE PRODUCTS FAVORITES
+// * add favorite --- DONE
 router.put(
   "/products/favorite/add/:productId",
   [requiresUser, validateRequest(updateProductSchema)],
   addFavoriteHandler
 );
+// * remove favorite --- DONE
 router.put(
   "/products/favorite/remove/:productId",
   [requiresUser, validateRequest(updateProductSchema)],

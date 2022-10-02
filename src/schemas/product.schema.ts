@@ -1,11 +1,11 @@
-import { object, string } from "yup";
+import { number, object, string } from "yup";
 const payload = {
   body: object({
     gender: string().required("gender is required"),
     category: string().required("category is required"),
     brand: string().required("brand is required"),
     description: string().required("description is required"),
-    price: string().required("price is required !"),
+    price: number().required("price is required !"),
     name: string().required("name is required !"),
   }),
 };
