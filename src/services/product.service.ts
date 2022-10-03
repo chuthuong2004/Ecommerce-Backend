@@ -2,9 +2,11 @@ import { DocumentDefinition, FilterQuery, UpdateQuery } from "mongoose";
 import { ActionFavorite } from "../controllers/product.controller";
 import log from "../logger";
 import BrandModel from "../models/brand.model";
+import CartModel from "../models/cart.model";
 import { CatalogDocument } from "../models/catalog.model";
 import CategoryModel from "../models/category.model";
 import ProductModel, { ProductDocument } from "../models/product.model";
+import ReviewModel from "../models/review.model";
 import UserModel, { Favorite } from "../models/user.model";
 import APIFeatures, { QueryOption } from "../utils/ApiFeatures";
 
@@ -169,6 +171,86 @@ export async function handleFavorite(
     // nếu không có favorite thì mới thêm vào user
     await UserModel.findByIdAndUpdate(userId, updateUser, { new: true });
     return await product.save();
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function deleteProduct(productId: string) {
+  try {
+    const deleteProduct = await ProductModel.delete({ _id: productId });
+    console.log(deleteProduct);
+    return deleteProduct;
+  } catch (error) {
+    throw error;
+  }
+}
+export async function restoreProduct(productId: string) {
+  try {
+    const restoreProduct = await ProductModel.restore({ _id: productId });
+    console.log(restoreProduct);
+    return restoreProduct;
+  } catch (error) {
+    throw error;
+  }
+}
+export async function forceDestroyProduct(productId: string) {
+  try {
+    // muốn xóa 1 sản phẩm khỏi db thì phải xóa tất cả dữ liệu liên quan đến nó
+    // Tìm tất cả các carts có chứa product này
+    // const carts = await CartModel.find({
+    //   "cartItems.$.product": productId,
+    // });
+
+    // tìm và xóa các product khỏi danh mục
+    // await CategoryModel.updateMany(
+    //   {
+    //     products: productId,
+    //   },
+    //   {
+    //     $pull: { products: productId },
+    //   }
+    // );
+    // Tìm review của product này và xóa review
+    // await ReviewModel.findOneAndDelete({ product: productId });
+    const [carts] = await Promise.all([
+      CartModel.find({
+        "cartItems.$.product": productId,
+      }),
+      CategoryModel.updateMany(
+        {
+          products: productId,
+        },
+        {
+          $pull: { products: productId },
+        }
+      ),
+      ReviewModel.findOneAndDelete({ product: productId }),
+    ]);
+    // * DELETE ITEM FROM CART SUCCESSFULLY
+    if (carts) {
+      carts.forEach(async (cart) => {
+        if (cart.cartItems.length == 1) {
+          // nếu cart này chỉ có 1 item là sản phẩm cần xóa thì tiến hành xóa luôn cart này và update lại user
+          await Promise.all([
+            UserModel.updateOne({ cart: cart._id }, { cart: null }),
+            CartModel.findByIdAndDelete(cart._id),
+          ]);
+          // await UserModel.updateOne({ cart: cart._id }, { cart: null });
+          // await CartModel.findByIdAndDelete(cart._id);
+        } else {
+          // nếu cart này mà có nhiều hơn 1 item thì xóa product khỏi các cart này ra
+          await CartModel.updateMany(
+            { "cartItems.$.product": productId },
+            { $pull: { cartItems: { product: productId } } }
+          );
+        }
+      });
+    }
+
+    return await ProductModel.deleteOne({
+      _id: productId,
+    });
   } catch (error) {
     throw error;
   }

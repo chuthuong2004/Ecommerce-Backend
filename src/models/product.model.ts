@@ -2,12 +2,13 @@ import mongoose, { Types } from "mongoose";
 import { BrandDocument } from "./brand.model";
 import { CategoryDocument } from "./category.model";
 import { ReviewDocument } from "./review.model";
-// import slug from "mongoose-slug-generator";
-import mongooseDelete from "mongoose-delete";
 import { UserDocument } from "./user.model";
 import slugify from "slugify";
-
-interface ISize {
+import MongooseDelete, {
+  SoftDeleteDocument,
+  SoftDeleteModel,
+} from "mongoose-delete";
+export interface ISize {
   size: string | number;
   quantity: number;
 }
@@ -27,7 +28,7 @@ export enum EGenderType {
   Kid = "kid",
   Unisex = "unisex",
 }
-export interface ProductDocument extends mongoose.Document {
+export interface ProductDocument extends SoftDeleteDocument {
   name: string;
   description: string;
   price: number;
@@ -77,7 +78,7 @@ const ProductSchema = new mongoose.Schema<ProductDocument>(
         sizes: [
           {
             size: { type: String || Number },
-            quantity: { type: String },
+            quantity: { type: Number },
           },
         ],
         colorName: { type: String, required: true },
@@ -125,7 +126,7 @@ const ProductSchema = new mongoose.Schema<ProductDocument>(
   },
   { timestamps: true }
 );
-ProductSchema.plugin(mongooseDelete, {
+ProductSchema.plugin(MongooseDelete, {
   deletedAt: true,
   overrideMethods: "all",
 });
@@ -133,5 +134,8 @@ ProductSchema.pre<ProductDocument>("save", function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();
 });
-const ProductModel = mongoose.model<ProductDocument>("Product", ProductSchema);
+const ProductModel = mongoose.model<
+  ProductDocument,
+  SoftDeleteModel<ProductDocument>
+>("Product", ProductSchema);
 export default ProductModel;
