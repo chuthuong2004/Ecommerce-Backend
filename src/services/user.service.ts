@@ -134,12 +134,12 @@ export async function getUser(queryFilter: FilterQuery<UserDocument>) {
   }
 }
 export async function updateUser(
-  id: string,
+  filter: FilterQuery<UserDocument>,
   update: UpdateQuery<UserDocument>,
-  options: QueryOptions<UserDocument>
+  options?: QueryOptions<UserDocument>
 ) {
   try {
-    await UserModel.findByIdAndUpdate(id, update, options);
+    await UserModel.findOneAndUpdate(filter, update, options);
   } catch (error) {
     throw error;
   }

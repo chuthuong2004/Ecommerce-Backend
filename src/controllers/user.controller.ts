@@ -91,7 +91,7 @@ export async function getUserHandler(req: Request, res: Response) {
 export async function updateUserRoleHandler(req: Request, res: Response) {
   try {
     await updateUser(
-      get(req.params, "userId"),
+      { _id: get(req.params, "userId") },
       { isAdmin: get(req.body, "isAdmin") },
       {
         new: true,

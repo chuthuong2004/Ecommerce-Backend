@@ -8,13 +8,13 @@ const payload = {
 };
 const params = {
   params: object({
-    cartId: string().required("cartId is required"),
+    orderId: string().required("orderId is required"),
   }),
 };
-export const addItemToCartSchema = object({
+export const createOrderSchema = object({
   ...payload,
 });
-export const updateCartSchema = object({
+export const updateOrderSchema = object({
   body: object({
     quantity: number()
       .required("quantity is required")
@@ -24,14 +24,9 @@ export const updateCartSchema = object({
     cartItemId: string().required("cartItemId is required"),
   }),
 });
-export const getCartSchema = object({
+export const getOrderSchema = object({
   ...params,
 });
-export const removeItemFromCartSchema = object({
-  params: object({
-    cartItemId: string().required("cartItemId is required"),
-  }),
-});
-export const deleteCartSchema = object({
+export const deleteOrderSchema = object({
   ...params,
 });
