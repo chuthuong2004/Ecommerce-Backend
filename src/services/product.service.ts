@@ -7,7 +7,7 @@ import { CatalogDocument } from "../models/catalog.model";
 import CategoryModel from "../models/category.model";
 import ProductModel, { ProductDocument } from "../models/product.model";
 import ReviewModel from "../models/review.model";
-import UserModel, { Favorite } from "../models/user.model";
+import UserModel, { IFavorite } from "../models/user.model";
 import APIFeatures, { QueryOption } from "../utils/ApiFeatures";
 
 export async function createProduct(
@@ -129,7 +129,7 @@ export async function handleFavorite(
   productId: string,
   userId: string,
   actionFavorite: string,
-  favorite?: Favorite | null
+  favorite?: IFavorite | null
 ): Promise<ProductDocument | null> {
   try {
     let updateProduct =
@@ -159,7 +159,7 @@ export async function handleFavorite(
     }
     // tìm xem product này đã có trong favorite nào của user không nếu có trả về 1 Favorite còn không trả về undefined
     const favoriteForUser = user?.favorites?.find(
-      (favorite: Favorite) => favorite.product == productId
+      (favorite: IFavorite) => favorite.product == productId
     );
     let updateUser;
 
@@ -197,22 +197,6 @@ export async function restoreProduct(productId: string) {
 export async function forceDestroyProduct(productId: string) {
   try {
     // muốn xóa 1 sản phẩm khỏi db thì phải xóa tất cả dữ liệu liên quan đến nó
-    // Tìm tất cả các carts có chứa product này
-    // const carts = await CartModel.find({
-    //   "cartItems.$.product": productId,
-    // });
-
-    // tìm và xóa các product khỏi danh mục
-    // await CategoryModel.updateMany(
-    //   {
-    //     products: productId,
-    //   },
-    //   {
-    //     $pull: { products: productId },
-    //   }
-    // );
-    // Tìm review của product này và xóa review
-    // await ReviewModel.findOneAndDelete({ product: productId });
     const [carts] = await Promise.all([
       CartModel.find({
         "cartItems.$.product": productId,

@@ -7,7 +7,7 @@ import { OrderDocument } from "./order.model";
 import { IColor, ProductDocument } from "./product.model";
 import { ReviewDocument } from "./review.model";
 
-export interface Favorite {
+export interface IFavorite {
   product: ProductDocument["_id"];
   size: string | number;
   color: string;
@@ -33,14 +33,14 @@ export interface UserDocument extends mongoose.Document {
   cart?: CartDocument["_id"];
   orders?: Types.DocumentArray<OrderDocument["_id"]>;
   reviews?: Types.DocumentArray<ReviewDocument["_id"]>;
-  favorites?: Types.Array<Favorite>;
-  addresses?: Types.Array<AddressDocument>;
+  favorites?: Types.Array<IFavorite>;
+  addresses?: Types.Array<IAddress>;
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
-export interface AddressDocument extends mongoose.Document {
+export interface IAddress {
   firstName: string;
   lastName: string;
   phone: string;
@@ -48,9 +48,12 @@ export interface AddressDocument extends mongoose.Document {
   district: string;
   ward: string;
   address: string;
-  isDefault: boolean;
+  _id: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
+}
+export interface AddressDocument extends IAddress {
+  isDefault: boolean;
 }
 const UserSchema = new mongoose.Schema<UserDocument>(
   {
@@ -110,7 +113,7 @@ const UserSchema = new mongoose.Schema<UserDocument>(
         district: { type: String },
         ward: { type: String },
         address: { type: String },
-        isDefault: { type: String },
+        isDefault: { type: Boolean, default: false },
       },
     ],
     gender: { type: String, enum: Object.values(EGender) },

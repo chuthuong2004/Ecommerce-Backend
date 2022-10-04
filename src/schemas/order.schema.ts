@@ -1,9 +1,23 @@
-import { number, object, string } from "yup";
+import { array, boolean, number, object, string } from "yup";
 const payload = {
   body: object({
-    size: string().required("size is required"),
-    color: string().required("color is required"),
-    product: string().required("product is required !"),
+    deliveryInformation: object({
+      address: string().trim().required("address is required"),
+      ward: string().trim().required("ward is required"),
+      district: string().trim().required("district is required"),
+      province: string().trim().required("province is required"),
+      phone: string()
+        .required("phone is required !")
+        .matches(
+          /^(03|09|08|07)[0-9]{8}$/,
+          "Vui lòng nhập số điện thoại hợp lệ !"
+        ),
+      lastName: string().trim().required("lastName is required"),
+      firstName: string().trim().required("firstName is required"),
+    }).required("deliveryInformation is required"),
+    cartItemsId: array()
+      .required("cartItemsId is required")
+      .min(1, "Vui lòng nhập cartItem id "),
   }),
 };
 const params = {

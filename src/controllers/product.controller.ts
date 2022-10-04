@@ -11,7 +11,7 @@ import {
 } from "../services/product.service";
 import { QueryOption } from "../utils/ApiFeatures";
 import { get } from "lodash";
-import { Favorite } from "../models/user.model";
+import { IFavorite } from "../models/user.model";
 
 // * CREATE PRODUCT --- DONE
 export async function createProductHandler(req: Request, res: Response) {
@@ -80,7 +80,7 @@ export enum ActionFavorite {
 }
 export async function addFavoriteHandler(req: Request, res: Response) {
   try {
-    const favorite: Favorite = get(req.body, "favorite");
+    const favorite: IFavorite = get(req.body, "favorite");
     const product = await handleFavorite(
       get(req.params, "productId"),
       get(req, "user.userId"),

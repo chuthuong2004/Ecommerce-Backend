@@ -1,0 +1,2279 @@
+{
+	"info": {
+		"_postman_id": "48307729-6482-4970-89a5-7331a3638789",
+		"name": "ChuthuongOnline",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23306493"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "LOGIN",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const dataToken = JSON.parse(responseBody)\r",
+									"if(dataToken.accessToken) {\r",
+									"    postman.setEnvironmentVariable(\"accessToken\", dataToken.accessToken)\r",
+									"}\r",
+									"if(dataToken.refreshToken){\r",
+									"    postman.setEnvironmentVariable(\"refreshToken\", dataToken.refreshToken)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"{{email}}\",\r\n    \"password\":\"{{password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/v1/users/login",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "REGISTER",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const res = JSON.parse(responseBody)\r",
+									"if(res.data) {\r",
+									"    postman.setEnvironmentVariable(\"email\", res.data.email)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"chuthuong1080@gmail.com\",\r\n    \"password\": \"123456\",\r\n    \"phone\": \"0333729170\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/v1/users/register",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET SESSION",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const newAccessToken = responseHeaders['x-access-token']\r",
+									"if(newAccessToken) {\r",
+									"    console.log('Set new access token')\r",
+									"    postman.setEnvironmentVariable(\"accessToken\", newAccessToken)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/sessions",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"sessions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "FORGOT PASSWORD",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const newAccessToken = responseHeaders['x-access-token']\r",
+									"if(newAccessToken) {\r",
+									"    console.log('Set new access token')\r",
+									"    postman.setEnvironmentVariable(\"accessToken\", newAccessToken)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"{{email}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/v1/password/forgot",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"password",
+								"forgot"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "LOGOUT",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"postman.setEnvironmentVariable(\"accessToken\", \"\")\r",
+									"postman.setEnvironmentVariable(\"refreshToken\", \"\")"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/users/logout",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET ALL USERS",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const newAccessToken = responseHeaders['x-access-token']\r",
+									"if(newAccessToken) {\r",
+									"    console.log('Set new access token')\r",
+									"    postman.setEnvironmentVariable(\"accessToken\", newAccessToken)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/admin/users?page=1&limit=1&sort=-createdAt",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"users"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "1"
+								},
+								{
+									"key": "sort",
+									"value": "-createdAt"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CHANGE PASSWORD",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"currentPassword\": \"123456\",\r\n    \"newPassword\": \"123452\",\r\n    \"confirmPassword\": \"1232456\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/v1/password/update",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"password",
+								"update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET AN USER - ADMIN",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/admin/user/632928f42aadc416f72a4bba",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"user",
+								"632928f42aadc416f72a4bba"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UPDATE USER ROLE - ADMIN",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"isAdmin\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/v1/admin/user/632c11056ed8972ad6e25053",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"user",
+								"632c11056ed8972ad6e25053"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE USER - ADMIN",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/admin/user/632928f42aadc416f72a4bba",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"user",
+								"632928f42aadc416f72a4bba"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET PROFILE",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/me",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"me"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Product",
+			"item": [
+				{
+					"name": "CREATE PRODUCT",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const newAccessToken = responseHeaders['x-access-token']\r",
+									"if(newAccessToken) {\r",
+									"    console.log('Set new access token')\r",
+									"    postman.setEnvironmentVariable(\"accessToken\", newAccessToken)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Áo thun cổ tròn ngắn tay Basic Monogram\",\r\n    \"price\": 1990000,\r\n    \"discount\": 0,\r\n    \"description\": \"Thành phần vải: 100% Cotton. Kiểu dáng áo thun phom suông năng động. Cổ tròn,  tay ngắn đơn giản. Thiết kế lấy cảm hứng từ hiệp hội bóng chày MLB. Họa tiết monogram nổi bật. Chất vải mềm mịn, thấm hút tốt. Gam màu hiện đại dễ dàng phối với nhiều trang phục và phụ kiện. Xuất xứ thương hiệu: Hàn Quốc\",\r\n    \"colors\": [\r\n        {\r\n            \"imageSmall\": \"/public/products/20220925020323-50bgd_3atsm1023_1_small.jpg\",\r\n            \"imageMedium\": \"/public/products/20220925020323-50bgd_3atsm1023_1_medium.jpg\",\r\n            \"images\": [\r\n                \"/public/products/20220925020323-50bgd_3atsm1023_1_large.jpg\",\r\n                \"/public/products/20220925020323-50bgd_3atsm1023_2_large.jpg\",\r\n                \"/public/products/20220925020323-50bgd_3atsm1023_3_large.jpg\",\r\n                \"/public/products/20220925020323-50bgd_3atsm1023_4_large.jpg\",\r\n                \"/public/products/20220925020323-50bgd_3atsm1023_5_large.jpg\",\r\n                \"/public/products/20220925020323-50bgd_3atsm1023_6_large.jpg\",\r\n                \"/public/products/20220925020323-50bgd_3atsm1023_7_large.jpg\",\r\n                \"/public/products/20220925020323-50bgd_3atsm1023_8_large.jpg\",\r\n                \"/public/products/20220925020323-50bgd_3atsm1023_9_large.jpg\",\r\n                \"/public/products/20220925020323-50bgd_3atsm1023_10_large.jpg\"],\r\n            \"sizes\": [\r\n                {\r\n                    \"size\": \"XS\",\r\n                    \"quantity\": 12\r\n                },\r\n                {\r\n                    \"size\": \"S\",\r\n                    \"quantity\": 20\r\n                },\r\n                {\r\n                    \"size\": \"M\",\r\n                    \"quantity\": 16\r\n                },\r\n                {\r\n                    \"size\": \"L\",\r\n                    \"quantity\": 56\r\n                },\r\n                {\r\n                    \"size\": \"XL\",\r\n                    \"quantity\": 34\r\n                }\r\n            ],\r\n            \"colorName\": \"yellow\"\r\n        },\r\n        {\r\n            \"imageSmall\": \"/public/products/20220925020323-50bll_3atsm1023_1_small.jpg\",\r\n            \"imageMedium\": \"/public/products/20220925020323-50bll_3atsm1023_1_medium.jpg\",\r\n            \"images\": [\r\n                \"/public/products/20220925020323-50bll_3atsm1023_1_large.jpg\",\r\n                \"/public/products/20220925020323-50bll_3atsm1023_2_large.jpg\",\r\n                \"/public/products/20220925020323-50bll_3atsm1023_4_large.jpg\",\r\n                \"/public/products/20220925020323-50bll_3atsm1023_5_large.jpg\",\r\n                \"/public/products/20220925020323-50bll_3atsm1023_6_large.jpg\",\r\n                \"/public/products/20220925020323-50bll_3atsm1023_7_large.jpg\",\r\n                \"/public/products/20220925020323-50bll_3atsm1023_8_large.jpg\",\r\n                \"/public/products/20220925020323-50bll_3atsm1023_9_large.jpg\",\"/public/products/20220925020323-50bll_3atsm1023_10_large.jpg\"],\r\n            \"sizes\": [\r\n                {\r\n                    \"size\": \"XS\",\r\n                    \"quantity\": 12\r\n                },\r\n                {\r\n                    \"size\": \"S\",\r\n                    \"quantity\": 20\r\n                },\r\n                {\r\n                    \"size\": \"M\",\r\n                    \"quantity\": 16\r\n                },\r\n                {\r\n                    \"size\": \"L\",\r\n                    \"quantity\": 56\r\n                },\r\n                {\r\n                    \"size\": \"XL\",\r\n                    \"quantity\": 34\r\n                }\r\n            ],\r\n            \"colorName\": \"light blue\"\r\n        },\r\n        {\r\n            \"imageSmall\": \"/public/products/20220925020323-50nys_3atsm1023_1_small.jpg\",\r\n            \"imageMedium\": \"/public/products/20220925020323-50nys_3atsm1023_1_medium.jpg\",\r\n            \"images\": [\r\n                \"/public/products/20220925020323-50nys_3atsm1023_1_large.jpg\",\r\n            \"/public/products/20220925020323-50nys_3atsm1023_2_large.jpg\",\r\n            \"/public/products/20220925020323-50nys_3atsm1023_3_large.jpg\",\r\n            \"/public/products/20220925020323-50nys_3atsm1023_4_large.jpg\",\r\n            \"/public/products/20220925020323-50nys_3atsm1023_5_large.jpg\",\r\n            \"/public/products/20220925020323-50nys_3atsm1023_6_large.jpg\",\r\n            \"/public/products/20220925020323-50nys_3atsm1023_7_large.jpg\",\r\n            \"/public/products/20220925020323-50nys_3atsm1023_8_large.jpg\"],\r\n            \"sizes\": [\r\n                {\r\n                    \"size\": \"XS\",\r\n                    \"quantity\": 12\r\n                },\r\n                {\r\n                    \"size\": \"S\",\r\n                    \"quantity\": 20\r\n                },\r\n                {\r\n                    \"size\": \"M\",\r\n                    \"quantity\": 16\r\n                },\r\n                {\r\n                    \"size\": \"L\",\r\n                    \"quantity\": 56\r\n                },\r\n                {\r\n                    \"size\": \"XL\",\r\n                    \"quantity\": 34\r\n                }\r\n            ],\r\n            \"colorName\": \"blue\"\r\n        },\r\n        {\r\n            \"imageSmall\": \"/public/products/{{imageSmall}}\",\r\n            \"imageMedium\": \"/public/products/{{imageMedium}}\",\r\n            \"images\": [\r\n                \"/public/products/{{imageLarge0}}\",\r\n                \"/public/products/{{imageLarge1}}\",\r\n                \"/public/products/{{imageLarge2}}\",\r\n                \"/public/products/{{imageLarge3}}\",\r\n                \"/public/products/{{imageLarge4}}\",\r\n                \"/public/products/{{imageLarge5}}\",\r\n                \"/public/products/{{imageLarge6}}\",\r\n                \"/public/products/{{imageLarge7}}\",\r\n                \"/public/products/{{imageLarge8}}\",\r\n                \"/public/products/{{imageLarge9}}\"\r\n                ],\r\n            \"sizes\": [\r\n                {\r\n                    \"size\": \"XS\",\r\n                    \"quantity\": 12\r\n                },\r\n                {\r\n                    \"size\": \"S\",\r\n                    \"quantity\": 20\r\n                },\r\n                {\r\n                    \"size\": \"M\",\r\n                    \"quantity\": 16\r\n                },\r\n                {\r\n                    \"size\": \"L\",\r\n                    \"quantity\": 56\r\n                },\r\n                {\r\n                    \"size\": \"XL\",\r\n                    \"quantity\": 34\r\n                }\r\n            ],\r\n            \"colorName\": \"black\"\r\n        }\r\n    ],\r\n    \"brand\": \"632fa7242e176f3c9f775782\",\r\n    \"preserveInformation\": \"<p>Giặt ở nhiệt độ tối đa 30 độ</p><p>Không dùng chất tẩy</p><p>Phơi trong bóng râm</p><p>Không phơi trực tiếp dưới ánh nắng mặt trời</p>\",\r\n    \"deliveryReturnPolicy\": \"<p>QUY ĐỊNH ĐỔI TRẢ HÀNG TẠI <b>MAISONONLINE</b></p><p><strong>Sản phẩm áp dụng:</strong> Tất cả sản phẩm được giao trên MaisonOnline, có chương trình khuyến mãi không quá 30%.</p><p><strong>Sản phẩm không áp dụng:</strong></p><p>- Đồ lót, đồ bơi</p><p>- Nước hoa</p><p>- Phụ kiện: Vớ, Khăn, Trang sức, Móc khóa, Ốp lưng, Shoecare, Khẩu trang...</p><p>- Không áp dụng cho các sản phẩm mua trực tiếp tại hệ thống của hàng của Maison.</p><p><strong>Đối tương khách hàng:</strong> Tất cả khách hàng sử dụng dịch vụ tại www.maisononline.vn</p><p><strong>Thời gian đổi trả hàng:</strong></p><p><strong>- Đổi hàng:</strong>Trong vòng <strong>14 ngày</strong> kể từ ngày khách hàng nhận được sản phẩm.</p><p><strong>- Trả hàng:</strong>Trong vòng <strong>3 ngày</strong> kể từ ngày khách hàng nhận được sản phẩm.</p><p>Tham khảo thêm thông tin tại <strong>Chính sách đổi trả hàng</strong></p>\",\r\n    \"category\": \"632fb31431bdaca089422a3e\",\r\n    \"keywords\": [\"mlb\", \"áo thun\", \"áo ngắn tay\", \"áo thun cổ tròn\", \"áo thun ngắn tay\"],\r\n    \"gender\":\"unisex\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/v1/admin/product/new",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"product",
+								"new"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET ALL PRODUCT",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/products",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET PRODUCT",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/product/63300c9cf7524778799d9350",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"product",
+								"63300c9cf7524778799d9350"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UPDATE PRODUCT",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const newAccessToken = responseHeaders['x-access-token']\r",
+									"if(newAccessToken) {\r",
+									"    console.log('Set new access token')\r",
+									"    postman.setEnvironmentVariable(\"accessToken\", newAccessToken)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"discount\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/v1/admin/product/63300c9cf7524778799d9350",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"product",
+								"63300c9cf7524778799d9350"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SOFT DELETE PRODUCT",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const newAccessToken = responseHeaders['x-access-token']\r",
+									"if(newAccessToken) {\r",
+									"    console.log('Set new access token')\r",
+									"    postman.setEnvironmentVariable(\"accessToken\", newAccessToken)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/admin/product/63300c9cf7524778799d9350",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"product",
+								"63300c9cf7524778799d9350"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "FORCE DELETE PRODUCT",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const newAccessToken = responseHeaders['x-access-token']\r",
+									"if(newAccessToken) {\r",
+									"    console.log('Set new access token')\r",
+									"    postman.setEnvironmentVariable(\"accessToken\", newAccessToken)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/admin/product/force/6335d7e6865328b72975607b",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"product",
+								"force",
+								"6335d7e6865328b72975607b"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ADD FAVORITE PRODUCT",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const newAccessToken = responseHeaders['x-access-token']\r",
+									"if(newAccessToken) {\r",
+									"    console.log('Set new access token')\r",
+									"    postman.setEnvironmentVariable(\"accessToken\", newAccessToken)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/products/favorite/add/63300c9cf7524778799d9350",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"products",
+								"favorite",
+								"add",
+								"63300c9cf7524778799d9350"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "REMOVE FAVORITE PRODUCT",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const newAccessToken = responseHeaders['x-access-token']\r",
+									"if(newAccessToken) {\r",
+									"    console.log('Set new access token')\r",
+									"    postman.setEnvironmentVariable(\"accessToken\", newAccessToken)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/products/favorite/remove/63300c9cf7524778799d9350",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"products",
+								"favorite",
+								"remove",
+								"63300c9cf7524778799d9350"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RESTORE PRODUCT",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const newAccessToken = responseHeaders['x-access-token']\r",
+									"if(newAccessToken) {\r",
+									"    console.log('Set new access token')\r",
+									"    postman.setEnvironmentVariable(\"accessToken\", newAccessToken)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/admin/product/restore/63300c9cf7524778799d9350",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"product",
+								"restore",
+								"63300c9cf7524778799d9350"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Catalog",
+			"item": [
+				{
+					"name": "CREATE CATALOG",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const newAccessToken = responseHeaders['x-access-token']\r",
+									"if(newAccessToken) {\r",
+									"    console.log('Set new access token')\r",
+									"    postman.setEnvironmentVariable(\"accessToken\", newAccessToken)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Mắt kính\",\r\n    \"type\": [\r\n        {\r\n            \"productType\": \"Nam\",\r\n            \"image\": \"\",\r\n            \"description\": \"\"\r\n        },\r\n        {\r\n            \"productType\": \"Nữ\",\r\n            \"image\": \"\",\r\n            \"description\": \"\"\r\n        },\r\n        {\r\n            \"productType\": \"Trẻ em\",\r\n            \"image\": \"\",\r\n            \"description\": \"\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/v1/admin/catalog/new",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"catalog",
+								"new"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET ALL CATALOG",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/catalogs",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"catalogs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET CATALOG",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/catalog/632f35b0b1734732d9dc8817",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"catalog",
+								"632f35b0b1734732d9dc8817"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UPDATE CATALOG",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const newAccessToken = responseHeaders['x-access-token']\r",
+									"if(newAccessToken) {\r",
+									"    console.log('Set new access token')\r",
+									"    postman.setEnvironmentVariable(\"accessToken\", newAccessToken)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Trang phục\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/v1/admin/catalog/632f35fab1734732d9dc8821",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"catalog",
+								"632f35fab1734732d9dc8821"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Category",
+			"item": [
+				{
+					"name": "CREATE CATEGORY",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const newAccessToken = responseHeaders['x-access-token']\r",
+									"if(newAccessToken) {\r",
+									"    console.log('Set new access token')\r",
+									"    postman.setEnvironmentVariable(\"accessToken\", newAccessToken)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Khăn choàng\",\r\n    \"catalog\": \"632f3560b1734732d9dc880d\",\r\n    \"gender\": [\"woman\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/v1/admin/category/new",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"category",
+								"new"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET ALL CATEGORY",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/categories?sort=createdAt",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"categories"
+							],
+							"query": [
+								{
+									"key": "sort",
+									"value": "createdAt"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET CATEGORY",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/category/632c9b5e16af802dbf8a99ab",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"category",
+								"632c9b5e16af802dbf8a99ab"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UPDATE CATEGORY",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const newAccessToken = responseHeaders['x-access-token']\r",
+									"if(newAccessToken) {\r",
+									"    console.log('Set new access token')\r",
+									"    postman.setEnvironmentVariable(\"accessToken\", newAccessToken)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Áo\",\r\n    \"catalog\":\"632c8afeb5ae91206ba5fc8f\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/v1/admin/category/632c9b5e16af802dbf8a99ab",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"category",
+								"632c9b5e16af802dbf8a99ab"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Upload",
+			"item": [
+				{
+					"name": "UPLOAD PRODUCT IMAGE",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const res = JSON.parse(responseBody)\r",
+									"if(res.files.images.length >0) {\r",
+									"    res.files.images.forEach((image, index)=> {\r",
+									"        postman.setEnvironmentVariable(`imageLarge${index+1}`, image.filename)\r",
+									"    })\r",
+									"}\r",
+									"postman.setEnvironmentVariable(\"imageMedium\",res.files.imageMedium[0].filename)\r",
+									"postman.setEnvironmentVariable(\"imageSmall\",res.files.imageSmall[0].filename)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "images",
+									"type": "file",
+									"src": [
+										"/E:/Image ChuthuongOnline/Product/MLB/Áo/Áo thun cổ tròn ngắn tay basic monogram/màu đen/50bks_3atsm1023_1_large.jpg",
+										"/E:/Image ChuthuongOnline/Product/MLB/Áo/Áo thun cổ tròn ngắn tay basic monogram/màu đen/50bks_3atsm1023_2_large.jpg",
+										"/E:/Image ChuthuongOnline/Product/MLB/Áo/Áo thun cổ tròn ngắn tay basic monogram/màu đen/50bks_3atsm1023_3_large.jpg",
+										"/E:/Image ChuthuongOnline/Product/MLB/Áo/Áo thun cổ tròn ngắn tay basic monogram/màu đen/50bks_3atsm1023_4_large.jpg",
+										"/E:/Image ChuthuongOnline/Product/MLB/Áo/Áo thun cổ tròn ngắn tay basic monogram/màu đen/50bks_3atsm1023_5_large.jpg",
+										"/E:/Image ChuthuongOnline/Product/MLB/Áo/Áo thun cổ tròn ngắn tay basic monogram/màu đen/50bks_3atsm1023_6_large.jpg",
+										"/E:/Image ChuthuongOnline/Product/MLB/Áo/Áo thun cổ tròn ngắn tay basic monogram/màu đen/50bks_3atsm1023_7_large.jpg",
+										"/E:/Image ChuthuongOnline/Product/MLB/Áo/Áo thun cổ tròn ngắn tay basic monogram/màu đen/50bks_3atsm1023_8_large.jpg",
+										"/E:/Image ChuthuongOnline/Product/MLB/Áo/Áo thun cổ tròn ngắn tay basic monogram/màu đen/50bks_3atsm1023_9_large.jpg"
+									]
+								},
+								{
+									"key": "imageSmall",
+									"type": "file",
+									"src": "/E:/Image ChuthuongOnline/Product/MLB/Áo/Áo thun cổ tròn ngắn tay basic monogram/màu đen/50bks_3atsm1023_1_small.jpg"
+								},
+								{
+									"key": "imageMedium",
+									"type": "file",
+									"src": "/E:/Image ChuthuongOnline/Product/MLB/Áo/Áo thun cổ tròn ngắn tay basic monogram/màu đen/50bks_3atsm1023_1_medium.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/v1/upload/products",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UPLOAD AVATAR IMAGE",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "avatar",
+									"type": "file",
+									"src": "/E:/avt.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/v1/upload/avatar",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								"avatar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UPLOAD CATALOG IMAGE",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const res = JSON.parse(responseBody)\r",
+									"if(res.data) {\r",
+									"    postman.setEnvironmentVariable(\"imageMen\", res.data.imageMen[0].filename)\r",
+									"    postman.setEnvironmentVariable(\"imageWoman\", res.data.imageWoman[0].filename)\r",
+									"    postman.setEnvironmentVariable(\"imageKid\", res.data.imageKid[0].filename)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "imageMen",
+									"type": "file",
+									"src": "/E:/Image ChuthuongOnline/Catalog/nam-trang-phuc_2ea04cdf7ce14a18a20ef86bc2e23416.jpg"
+								},
+								{
+									"key": "imageWoman",
+									"type": "file",
+									"src": "/E:/Image ChuthuongOnline/Catalog/nu-trang-phuc_3446f6419c3d4d2bb5099c467d322a68.jpg"
+								},
+								{
+									"key": "imageKid",
+									"type": "file",
+									"src": "/E:/Image ChuthuongOnline/Catalog/cate-trangphuc_e54490b0673341c78ab94b5155cce90b.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/v1/upload/catalogs",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								"catalogs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UPLOAD BRAND IMAGE",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const res = JSON.parse(responseBody)\r",
+									"if(res.fileName) {\r",
+									"    postman.setEnvironmentVariable(\"imageBrand\", res.fileName)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "logo",
+									"type": "file",
+									"src": "/E:/Image ChuthuongOnline/Brand/lesilla_1270806796434255a4c528bffa96cdca.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/v1/upload/brands",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								"brands"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Brand",
+			"item": [
+				{
+					"name": "CREATE BRAND",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const newAccessToken = responseHeaders['x-access-token']\r",
+									"if(newAccessToken) {\r",
+									"    console.log('Set new access token')\r",
+									"    postman.setEnvironmentVariable(\"accessToken\", newAccessToken)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Le Silla\",\r\n    \"logo\": \"/public/brands/{{imageBrand}}\",\r\n    \"history\": \"<b>Le Silla</b> là thương hiệu giày cao cấp đến từ Ý được sáng lập bởi Enio Silla và Monica Ciabattin. Những sản phẩm của <b>Le Silla</b> là sự kết hợp hài hòa giữa chủ nghĩa lãng mạn, quyến rũ cùng sự nữ tính. Ngoài những mẫu giày cao gót 10cm nổi tiếng, <b>Le Silla</b> còn có những thiết kế đa dạng, đáp ứng mọi nhu cầu thường nhật của những quý cô thành thị. Từ những đôi boots sành điệu đến những đôi cao gót thanh tao, tất cả đều đem lại thiết kế đạt đến độ tuyệt hảo trong quá trình chế tác từ chất liệu và kiểu dáng. \"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/v1/admin/brand/new",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"brand",
+								"new"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET ALL BRANDS",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/brands",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"brands"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET BRAND",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/brand/632fa7242e176f3c9f775782",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"brand",
+								"632fa7242e176f3c9f775782"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cart",
+			"item": [
+				{
+					"name": "ADD ITEM TO CART",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const newAccessToken = responseHeaders['x-access-token']\r",
+									"if(newAccessToken) {\r",
+									"    console.log('Set new access token')\r",
+									"    postman.setEnvironmentVariable(\"accessToken\", newAccessToken)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"product\": \"63370adc5ba35494fc385ae9\",\r\n    \"color\":\"dark-blue\",\r\n    \"size\": \"XL\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/v1/cart/add-to-cart",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"cart",
+								"add-to-cart"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET ALL CART",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const newAccessToken = responseHeaders['x-access-token']\r",
+									"if(newAccessToken) {\r",
+									"    console.log('Set new access token')\r",
+									"    postman.setEnvironmentVariable(\"accessToken\", newAccessToken)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/carts",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"carts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET MY CART",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const newAccessToken = responseHeaders['x-access-token']\r",
+									"if(newAccessToken) {\r",
+									"    console.log('Set new access token')\r",
+									"    postman.setEnvironmentVariable(\"accessToken\", newAccessToken)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/cart/me",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"cart",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "REMOVE ITEM FROM CART",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const newAccessToken = responseHeaders['x-access-token']\r",
+									"if(newAccessToken) {\r",
+									"    console.log('Set new access token')\r",
+									"    postman.setEnvironmentVariable(\"accessToken\", newAccessToken)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/cart/remove-item-from-cart/6339d6135e19eb50f9808fc7",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"cart",
+								"remove-item-from-cart",
+								"6339d6135e19eb50f9808fc7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UPDATE QUANTITY CART",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const newAccessToken = responseHeaders['x-access-token']\r",
+									"if(newAccessToken) {\r",
+									"    console.log('Set new access token')\r",
+									"    postman.setEnvironmentVariable(\"accessToken\", newAccessToken)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"quantity\": 39\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/v1/cart/633ab9e5eda6180b0b003f57",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"cart",
+								"633ab9e5eda6180b0b003f57"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET CART",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const newAccessToken = responseHeaders['x-access-token']\r",
+									"if(newAccessToken) {\r",
+									"    console.log('Set new access token')\r",
+									"    postman.setEnvironmentVariable(\"accessToken\", newAccessToken)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/cart/633ab9e5eda6180b0b003f56",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"cart",
+								"633ab9e5eda6180b0b003f56"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE CART",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const newAccessToken = responseHeaders['x-access-token']\r",
+									"if(newAccessToken) {\r",
+									"    console.log('Set new access token')\r",
+									"    postman.setEnvironmentVariable(\"accessToken\", newAccessToken)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/cart/633ab9e5eda6180b0b003f56",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"cart",
+								"633ab9e5eda6180b0b003f56"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Order",
+			"item": [
+				{
+					"name": "GET ALL ORDER",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const newAccessToken = responseHeaders['x-access-token']\r",
+									"if(newAccessToken) {\r",
+									"    console.log('Set new access token')\r",
+									"    postman.setEnvironmentVariable(\"accessToken\", newAccessToken)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/admin/orders",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CREATE NEW ORDER",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const newAccessToken = responseHeaders['x-access-token']\r",
+									"if(newAccessToken) {\r",
+									"    console.log('Set new access token')\r",
+									"    postman.setEnvironmentVariable(\"accessToken\", newAccessToken)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"deliveryInformation\": {\r\n        \"firstName\": \"Đào\",\r\n        \"lastName\": \"Văn Thương\",\r\n        \"phone\":\"0333729170\",\r\n        \"province\": \"Thành phố Hồ Chí Minh\",\r\n        \"district\": \"Quận Thủ Đức\",\r\n        \"ward\": \"Phường Hiệp Bình Chánh\",\r\n        \"address\": \"520/90/19 QL13\"\r\n    },\r\n    \"cartItemsId\": [\"633b1adf6313d9d7eb0b4960\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/v1/order/new",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"order",
+								"new"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET MY ORDER",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const newAccessToken = responseHeaders['x-access-token']\r",
+									"if(newAccessToken) {\r",
+									"    console.log('Set new access token')\r",
+									"    postman.setEnvironmentVariable(\"accessToken\", newAccessToken)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/order/me",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"order",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET ORDER",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const newAccessToken = responseHeaders['x-access-token']\r",
+									"if(newAccessToken) {\r",
+									"    console.log('Set new access token')\r",
+									"    postman.setEnvironmentVariable(\"accessToken\", newAccessToken)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/admin/order/633b1af66313d9d7eb0b4993",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"order",
+								"633b1af66313d9d7eb0b4993"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UPDATE STATUS ORDER",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const newAccessToken = responseHeaders['x-access-token']\r",
+									"if(newAccessToken) {\r",
+									"    console.log('Set new access token')\r",
+									"    postman.setEnvironmentVariable(\"accessToken\", newAccessToken)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/admin/order/123",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"order",
+								"123"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE ORDER",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const newAccessToken = responseHeaders['x-access-token']\r",
+									"if(newAccessToken) {\r",
+									"    console.log('Set new access token')\r",
+									"    postman.setEnvironmentVariable(\"accessToken\", newAccessToken)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/admin/order/123",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"order",
+								"123"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CANCEL ORDER",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/order/cancel/12",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"order",
+								"cancel",
+								"12"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

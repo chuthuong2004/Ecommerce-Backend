@@ -1,29 +1,32 @@
 import mongoose, { Types } from "mongoose";
-import { AddressDocument, UserDocument } from "./user.model";
+import { IAddress, UserDocument } from "./user.model";
 import { ProductDocument } from "./product.model";
 import { nanoid } from "nanoid";
-
-export interface OrderItemDocument extends mongoose.Document {
+import { v4 as uuidv4 } from "uuid";
+export interface IOrderItem {
   product: ProductDocument["_id"];
+  brandName: string;
   image: string;
   quantity: number;
-  size: string;
+  size: string | number;
   color: string;
   discount: number;
   price: number;
   name: string;
   createdAt: Date;
   updatedAt: Date;
+  _id: Types.ObjectId;
 }
 export interface OrderDocument extends mongoose.Document {
   orderId: string;
   user: UserDocument["_id"];
-  orderItems: Types.Array<OrderItemDocument>;
-  deliveryInformation: Omit<AddressDocument, "isDefault">;
+  orderItems: Types.Array<IOrderItem>;
+  deliveryInformation: IAddress;
   taxPrice: number;
   shippingPrice: number;
   orderStatus: EOrderStatus;
   totalPrice: number;
+  provisionalPrice: number;
   isPaid?: boolean;
   paidAt?: Date;
   shippingAt?: Date;
@@ -35,7 +38,7 @@ export interface OrderDocument extends mongoose.Document {
   createdAt: Date;
   updatedAt: Date;
 }
-enum EOrderStatus {
+export enum EOrderStatus {
   Processing = "Processing",
   Shipping = "Shipping",
   Delivery = "Delivery",
@@ -48,7 +51,10 @@ const OrderSchema = new mongoose.Schema<OrderDocument>(
       type: String,
       required: true,
       unique: true,
-      default: () => `ECO${nanoid(10)}`,
+      default: () => {
+        const uuid: string = uuidv4().toUpperCase();
+        return `ECO${uuid.split("-")[0]}${uuid.split("-")[1]}`;
+      },
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,
@@ -63,9 +69,10 @@ const OrderSchema = new mongoose.Schema<OrderDocument>(
         price: { type: Number, required: true },
         discount: { type: Number },
         quantity: { type: Number, required: true },
-        size: { type: Number, required: true },
+        size: { type: String || Number, required: true },
         color: { type: String, required: true },
         image: { type: String, required: true },
+        brandName: { type: String, required: true },
         product: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "Product",
@@ -92,7 +99,9 @@ const OrderSchema = new mongoose.Schema<OrderDocument>(
       required: true,
       default: 0,
     },
+
     totalPrice: { type: Number, required: true, default: 0 },
+    provisionalPrice: { type: Number, required: true, default: 0 },
     orderStatus: {
       type: String,
       default: EOrderStatus.Processing,
