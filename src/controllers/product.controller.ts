@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import {
   createProduct,
   deleteProduct,
@@ -12,73 +12,87 @@ import {
 import { QueryOption } from "../utils/ApiFeatures";
 import { get } from "lodash";
 import { IFavorite } from "../models/user.model";
+import HttpException from "../utils/httpException";
 
 // * CREATE PRODUCT --- DONE
-export async function createProductHandler(req: Request, res: Response) {
+export async function createProductHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const product = await createProduct(req.body);
     if (!product) {
-      return res
-        .status(400)
-        .json({ message: "Thêm sản phẩm không thành công !" });
+      return next(new HttpException(400, "Thêm sản phẩm không thành công !"));
     }
-    return res.status(200).json(product);
-  } catch (error) {
+    return res.json(product);
+  } catch (error: any) {
     res.status(500).json({ error: error });
   }
 }
 // * GET ALL PRODUCT --- DONE
 export async function getAllProductHandler(
   req: Request<{}, {}, {}, QueryOption>,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) {
   try {
     const products = await getAllProduct(req.query);
-    console.log(products);
-
-    res.status(200).json({
+    res.json({
       countDocument: products.length,
       resultPerPage: req.query.limit ? req.query.limit * 1 : 0,
       data: products,
     });
-  } catch (error) {
-    res.status(500).json({ error: error });
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
   }
 }
 // * GET PRODUCT --- DONE
-export async function getProductHandler(req: Request, res: Response) {
+export async function getProductHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const product = await getProduct(get(req.params, "productId"));
     if (!product) {
-      return res.status(404).json({ message: "Không tìm thấy product !" });
+      return next(new HttpException(400, "Không tìm thấy product !"));
     }
-    res.status(200).json(product);
-  } catch (error) {
-    res.status(500).json({ error: error });
+    res.json(product);
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
   }
 }
 // * UPDATE PRODUCT --- DONE
-export async function updateProductHandler(req: Request, res: Response) {
+export async function updateProductHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     let product = await updateProduct(get(req.params, "productId"), req.body);
     if (!product) {
-      return res
-        .status(400)
-        .json({ message: "Cập nhật product không thành công !" });
+      return next(
+        new HttpException(400, "Không nhật product không thành công !")
+      );
     }
-    return res.status(200).json({
+    res.json({
       message: "Cập nhật product thành công !",
       data: product,
     });
-  } catch (error) {
-    res.status(500).json({ error: error });
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
   }
 }
 export enum ActionFavorite {
   ADD = "add",
   REMOVE = "remove",
 }
-export async function addFavoriteHandler(req: Request, res: Response) {
+export async function addFavoriteHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const favorite: IFavorite = get(req.body, "favorite");
     const product = await handleFavorite(
@@ -87,18 +101,21 @@ export async function addFavoriteHandler(req: Request, res: Response) {
       ActionFavorite.ADD,
       favorite ? favorite : null
     );
-
-    if (!product) {
-      return res.status(404).json({ message: "Không tìm thấy product !" });
-    }
-    return res
-      .status(200)
-      .json({ message: "Thêm yêu thích sản phẩm thành công !", data: product });
-  } catch (error) {
-    return res.status(500).json({ error: error });
+    if (!product)
+      return next(new HttpException(404, "Không tìm thấy product !"));
+    res.json({
+      message: "Thêm yêu thích sản phẩm thành công !",
+      data: product,
+    });
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
   }
 }
-export async function removeFavoriteHandler(req: Request, res: Response) {
+export async function removeFavoriteHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const product = await handleFavorite(
       get(req.params, "productId"),
@@ -106,64 +123,66 @@ export async function removeFavoriteHandler(req: Request, res: Response) {
       ActionFavorite.REMOVE
     );
 
-    if (!product) {
-      return res.status(404).json({ message: "Không tìm thấy product !" });
-    }
-    return res
-      .status(200)
-      .json({ message: "Bỏ yêu thích sản phẩm thành công !", data: product });
-  } catch (error) {
-    return res.status(500).json({ error });
+    if (!product)
+      return next(new HttpException(404, "Không tìm thấy product !"));
+    res.json({ message: "Bỏ yêu thích sản phẩm thành công !", data: product });
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
   }
 }
-export async function deleteProductHandler(req: Request, res: Response) {
+export async function deleteProductHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const deleted = await deleteProduct(req.params.productId);
-    console.log("deleted: ", deleted);
-    if (!deleted) {
-      res.status(404).json({
-        message: "Không tìm thấy product để xử lý xóa mềm !",
-      });
-    } else {
-      res.status(200).json({
-        message: "Xóa mềm thành công !",
-      });
-    }
-  } catch (error) {
-    res.status(500).json({ error: error });
+    if (!deleted)
+      return next(
+        new HttpException(404, "Không tìm thấy product để xử lý xóa mềm !")
+      );
+    res.json({
+      message: "Xóa mềm thành công !",
+    });
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
   }
 }
-export async function forceDestroyProductHandler(req: Request, res: Response) {
+export async function forceDestroyProductHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const destroyProduct = await forceDestroyProduct(
       get(req.params, "productId")
     );
-    if (!destroyProduct) {
-      res.status(404).json({
-        message: "Không tìm thấy product để xử lý xóa hẳn !",
-      });
-    } else {
-      res.status(200).json({
-        message: "Đã xóa sản phẩm thành công !",
-      });
-    }
-  } catch (error) {
-    res.status(500).json({ error: error });
+    if (!destroyProduct)
+      return next(
+        new HttpException(404, "Không tìm thấy product để xử lý xóa hẳn !")
+      );
+    res.json({
+      message: "Đã xóa sản phẩm thành công !",
+    });
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
   }
 }
-export async function restoreProductHandler(req: Request, res: Response) {
+export async function restoreProductHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const restored = await restoreProduct(req.params.productId);
-    if (!restored) {
-      res.status(404).json({
-        message: "Không tìm thấy sản phẩm để khôi phục !",
-      });
-    } else {
-      res.status(200).json({
-        message: "Khôi phục sản phẩm thành công !",
-      });
-    }
-  } catch (error) {
-    res.status(500).json({ error: error });
+    if (!restored)
+      return next(
+        new HttpException(404, "Không tìm thấy product để khôi phục !")
+      );
+    res.json({
+      message: "Khôi phục sản phẩm thành công !",
+    });
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
   }
 }

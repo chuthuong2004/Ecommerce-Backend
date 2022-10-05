@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { get } from "lodash";
 import log from "../logger";
 import { CartDocument, ICartItem } from "../models/cart.model";
@@ -11,10 +11,12 @@ import {
   updateQuantityCart,
 } from "../services/cart.service";
 import { QueryOption } from "../utils/ApiFeatures";
+import HttpException from "../utils/httpException";
 
 export async function getAllCartHandler(
   req: Request<{}, {}, {}, QueryOption>,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) {
   try {
     const carts = await getAllCart(req.query);
@@ -23,35 +25,45 @@ export async function getAllCartHandler(
       resultPerPage: req.query.limit ? req.query.limit * 1 : 0,
       data: carts,
     });
-  } catch (error) {
-    res.status(500).json({ error });
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
   }
 }
-export async function getCartHandler(req: Request, res: Response) {
+export async function getCartHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const cart: CartDocument | null = await getCart({
       _id: get(req.params, "cartId"),
     });
-    if (!cart)
-      return res.status(404).json({ message: "Không tìm thấy giỏ hàng" });
+    if (!cart) return next(new HttpException(404, "Không tìm thấy giỏ hàng !"));
     res.json(cart);
-  } catch (error) {
-    res.status(500).json({ error });
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
   }
 }
-export async function getMyCartHandler(req: Request, res: Response) {
+export async function getMyCartHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const cart: CartDocument | null = await getCart({
       user: get(req, "user.userId"),
     });
-    if (!cart)
-      return res.status(404).json({ message: "Không tìm thấy giỏ hàng" });
+    if (!cart) return next(new HttpException(404, "Không tìm thấy giỏ hàng !"));
     res.json(cart);
-  } catch (error) {
-    res.status(500).json({ error });
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
   }
 }
-export async function addItemToCartHandler(req: Request, res: Response) {
+export async function addItemToCartHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const cartItem: ICartItem = {
       ...req.body,
@@ -59,40 +71,38 @@ export async function addItemToCartHandler(req: Request, res: Response) {
         req.body.quantity && req.body.quantity > 0 ? req.body.quantity : 1,
     };
     const cart: any = await addItemToCart(cartItem, get(req, "user.userId"));
-    if (!cart) {
-      log.info(`Thêm `);
-      return res
-        .status(400)
-        .json({ message: "Thêm giỏ hàng không thành công !" });
-    }
-    if (cart?.message) {
-      return res.status(cart.statusCode).json({ message: cart.message });
-    }
-    return res.json({ message: "Thêm vào giỏ hàng thành công !", data: cart });
-  } catch (error) {
-    res.status(500).json({ error });
+    if (!cart)
+      return next(new HttpException(400, "Thêm giỏ hàng không thành công !"));
+    if (cart?.message)
+      return next(new HttpException(cart.statusCode, cart.message));
+    res.json({ message: "Thêm vào giỏ hàng thành công !", data: cart });
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
   }
 }
-export async function removeItemFromCartHandler(req: Request, res: Response) {
+export async function removeItemFromCartHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const cart: any = await removeItemFromCart(
       get(req, "user.userId"),
       get(req.params, "cartItemId")
     );
-    if (!cart) {
-      return res.status(400).json("Xóa cart item không thành công !");
-    }
-    if (cart.message) {
-      return res.status(cart.statusCode).json({ message: cart.message });
-    }
+    if (!cart)
+      return next(new HttpException(400, "Xóa cart item không thành công !"));
+    if (cart.message)
+      return next(new HttpException(cart.statusCode, cart.message));
     res.json(cart);
-  } catch (error) {
-    res.status(500).json({ error });
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
   }
 }
 export async function updateCartHandler(
   req: Request<{}, ICartItem, ICartItem, {}>,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) {
   try {
     const cart: any = await updateQuantityCart(
@@ -100,23 +110,24 @@ export async function updateCartHandler(
       get(req.body, "quantity"),
       get(req.params, "cartItemId")
     );
-    if (!cart) {
-      return res.status(400).json({ message: "Lỗi update cart !" });
-    }
-    if (cart.message) {
-      return res.status(cart.statusCode).json({ message: cart.message });
-    }
+    if (!cart) return next(new HttpException(400, "Lỗi update cart !"));
+    if (cart.message)
+      return next(new HttpException(cart.statusCode, cart.message));
     res.json(cart);
-  } catch (error) {
-    res.status(500).json({ error });
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
   }
 }
 
-export async function deleteCartHandler(req: Request, res: Response) {
+export async function deleteCartHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     await deleteCart(get(req.params, "cartId"));
     res.json({ message: "Xóa giỏ hàng thành công !" });
-  } catch (error) {
-    res.status(500).json({ error });
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
   }
 }

@@ -7,6 +7,7 @@ import upload from "./upload.route";
 import brand from "./brand.route";
 import cart from "./cart.route";
 import order from "./order.route";
+import review from "./review.route";
 const router = express.Router();
 
 router.use("/api/v1", user);
@@ -17,4 +18,5 @@ router.use("/api/v1", upload);
 router.use("/api/v1", brand);
 router.use("/api/v1", cart);
 router.use("/api/v1", order);
+router.use("/api/v1", review);
 export default router;

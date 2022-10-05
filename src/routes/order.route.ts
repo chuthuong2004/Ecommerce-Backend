@@ -1,14 +1,16 @@
 import express from "express";
 import {
+  cancelOrderHandler,
   createOrderHandler,
   deleteOrderHandler,
   getAllOrderHandler,
   getMyOrderHandler,
   getOrderHandler,
-  updateOrderHandler,
+  updateStatusOrderHandler,
 } from "../controllers/order.controller";
 import { requiresAdmin, requiresUser, validateRequest } from "../middlewares";
 import {
+  cancelOrderSchema,
   createOrderSchema,
   deleteOrderSchema,
   getOrderSchema,
@@ -37,7 +39,12 @@ router.get("/admin/orders", requiresAdmin, getAllOrderHandler);
 router.put(
   "/admin/order/:orderId",
   [requiresAdmin, validateRequest(updateOrderSchema)],
-  updateOrderHandler
+  updateStatusOrderHandler
+);
+router.put(
+  "/order/cancel/:orderId",
+  [requiresUser, validateRequest(cancelOrderSchema)],
+  cancelOrderHandler
 );
 // DELETE ORDER
 router.delete(

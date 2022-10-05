@@ -30,13 +30,15 @@ export const createOrderSchema = object({
 });
 export const updateOrderSchema = object({
   body: object({
-    quantity: number()
-      .required("quantity is required")
-      .min(0, "Số lượng phải lớn hơn 0"),
+    orderStatus: string().required("orderStatus is required"),
   }),
-  params: object({
-    cartItemId: string().required("cartItemId is required"),
+  ...params,
+});
+export const cancelOrderSchema = object({
+  body: object({
+    canceledReason: string().required("canceledReason is required"),
   }),
+  ...params,
 });
 export const getOrderSchema = object({
   ...params,

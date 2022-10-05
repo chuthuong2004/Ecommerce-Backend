@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { get } from "lodash";
 import {
   createBrand,
@@ -8,48 +8,60 @@ import {
   updateBrand,
 } from "../services/brand.service";
 import { QueryOption } from "../utils/ApiFeatures";
+import HttpException from "../utils/httpException";
 
-export async function createBrandHandler(req: Request, res: Response) {
+export async function createBrandHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const body = req.body;
     const brand = await createBrand({ ...body });
     if (!brand) {
-      return res.status(400).json({ message: "Tạo brand thất bại !" });
+      return next(new HttpException(400, "Tạo brand thất bại !"));
     }
-    return res
-      .status(200)
-      .json({ message: "Tạo brand thành công !", data: brand });
-  } catch (error) {
-    return res.status(500).json({ error: error });
+    res.json({ message: "Tạo brand thành công !", data: brand });
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
   }
 }
 export async function getAllBrandHandler(
   req: Request<{}, {}, {}, QueryOption>,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) {
   try {
     const brands = await getAllBrand(req.query);
-    res.status(200).json({
+    res.json({
       countDocument: brands.length,
       resultPerPage: req.query.limit ? req.query.limit * 1 : 0,
       data: brands,
     });
-  } catch (error) {
-    return res.status(500).json({ error: error });
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
   }
 }
-export async function getBrandHandler(req: Request, res: Response) {
+export async function getBrandHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const brand = await getBrand(get(req.params, "brandId"));
     if (!brand) {
-      return res.status(404).json({ message: "Không tìm thấy brand !" });
+      return next(new HttpException(404, "Không tìm thấy brand !"));
     }
-    res.status(200).json(brand);
-  } catch (error) {
-    res.status(500).json({ error: error });
+    res.json(brand);
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
   }
 }
-export async function updateBrandHandler(req: Request, res: Response) {
+export async function updateBrandHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const brand = await updateBrand(
       { _id: get(req.params, "brandId") },
@@ -57,22 +69,22 @@ export async function updateBrandHandler(req: Request, res: Response) {
       { new: true }
     );
     if (!brand) {
-      return res.status(404).json({ message: "Không tìm thấy brand !" });
+      next(new HttpException(404, "Không tìm thấy brand !"));
     }
-    res.status(200).json({
-      brand,
-    });
-  } catch (error) {
-    res.status(500).json({ error: error });
+    res.json(brand);
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
   }
 }
-export async function deleteBrandHandler(req: Request, res: Response) {
+export async function deleteBrandHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     await deleteBrand(get(req.params, "catalogId"));
-    res.status(200).json({
-      message: "Đã xóa thương hiệu thành công !",
-    });
-  } catch (error) {
-    res.status(500).json({ error: error });
+    next(new HttpException(200, "Đã xóa thương hiệu thành công !"));
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
   }
 }

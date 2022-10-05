@@ -1,21 +1,23 @@
 import mongoose, { Types } from "mongoose";
 import { UserDocument } from "./user.model";
 import { ProductDocument } from "./product.model";
-import mongooseDelete from "mongoose-delete";
-interface OrderedProductDetail {
-  size: string;
+import MongooseDelete, {
+  SoftDeleteDocument,
+  SoftDeleteModel,
+} from "mongoose-delete";
+export interface IOrderedProductDetail {
+  size: string | number;
   color: string;
   quantity: number;
   createdAt: Date;
   updatedAt: Date;
 }
-export interface ReviewDocument extends mongoose.Document {
+export interface ReviewDocument extends SoftDeleteDocument {
   user: UserDocument["_id"];
   product: ProductDocument["_id"];
-  orderedProductDetail: OrderedProductDetail;
+  orderedProductDetail: IOrderedProductDetail;
   content: string;
   star: number;
-  enable: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -27,7 +29,7 @@ const ReviewSchema = new mongoose.Schema<ReviewDocument>(
     },
     product: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
     orderedProductDetail: {
-      size: { type: String },
+      size: { type: String || Number },
       color: { type: String },
       quantity: { type: Number },
     },
@@ -38,14 +40,16 @@ const ReviewSchema = new mongoose.Schema<ReviewDocument>(
       min: 1,
       default: 5,
     },
-    enable: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
 // Add plugin
-ReviewSchema.plugin(mongooseDelete, {
+ReviewSchema.plugin(MongooseDelete, {
   deletedAt: true,
   overrideMethods: "all",
 });
-const ReviewModel = mongoose.model<ReviewDocument>("Review", ReviewSchema);
+const ReviewModel = mongoose.model<
+  ReviewDocument,
+  SoftDeleteModel<ReviewDocument>
+>("Review", ReviewSchema);
 export default ReviewModel;

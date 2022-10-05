@@ -648,7 +648,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"discount\": 1\r\n}",
+							"raw": "{\r\n    \"quantitySold\": 0\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -656,7 +656,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{endpoint}}/api/v1/admin/product/63300c9cf7524778799d9350",
+							"raw": "{{endpoint}}/api/v1/admin/product/633bcb36b9445656abd37b48",
 							"host": [
 								"{{endpoint}}"
 							],
@@ -665,7 +665,7 @@
 								"v1",
 								"admin",
 								"product",
-								"63300c9cf7524778799d9350"
+								"633bcb36b9445656abd37b48"
 							]
 						}
 					},
@@ -1624,7 +1624,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"product\": \"63370adc5ba35494fc385ae9\",\r\n    \"color\":\"dark-blue\",\r\n    \"size\": \"XL\"\r\n}",
+							"raw": "{\r\n    \"product\": \"633af8d5dd4d3f035d3cc2d7\",\r\n    \"color\":\"black\",\r\n    \"size\": \"M\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2023,7 +2023,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"deliveryInformation\": {\r\n        \"firstName\": \"Đào\",\r\n        \"lastName\": \"Văn Thương\",\r\n        \"phone\":\"0333729170\",\r\n        \"province\": \"Thành phố Hồ Chí Minh\",\r\n        \"district\": \"Quận Thủ Đức\",\r\n        \"ward\": \"Phường Hiệp Bình Chánh\",\r\n        \"address\": \"520/90/19 QL13\"\r\n    },\r\n    \"cartItemsId\": [\"633b1adf6313d9d7eb0b4960\"]\r\n}",
+							"raw": "{\r\n    \"deliveryInformation\": {\r\n        \"firstName\": \"Nguyễn\",\r\n        \"lastName\": \"Quốc Trọn\",\r\n        \"phone\":\"0921775630\",\r\n        \"province\": \"Tỉnh Bình Định\",\r\n        \"district\": \"Huyện Phù Cát\",\r\n        \"ward\": \"Thị trân Ngô Mây\",\r\n        \"address\": \"khu An Hành Tây\"\r\n    },\r\n    \"cartItemsId\": [\"633dbbff52c8cfe12c3a9759\",\"633dbc5d52c8cfe12c3a9845\"]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2082,7 +2082,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{endpoint}}/api/v1/order/me",
+							"raw": "{{endpoint}}/api/v1/order/me?orderStatus[regex]=Delivery",
 							"host": [
 								"{{endpoint}}"
 							],
@@ -2091,6 +2091,12 @@
 								"v1",
 								"order",
 								"me"
+							],
+							"query": [
+								{
+									"key": "orderStatus[regex]",
+									"value": "Delivery"
+								}
 							]
 						}
 					},
@@ -2184,8 +2190,17 @@
 								"type": "text"
 							}
 						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"orderStatus\":\"Delivered\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "{{endpoint}}/api/v1/admin/order/123",
+							"raw": "{{endpoint}}/api/v1/admin/order/633dbcdd52c8cfe12c3a9878",
 							"host": [
 								"{{endpoint}}"
 							],
@@ -2194,7 +2209,7 @@
 								"v1",
 								"admin",
 								"order",
-								"123"
+								"633dbcdd52c8cfe12c3a9878"
 							]
 						}
 					},
@@ -2254,11 +2269,51 @@
 				},
 				{
 					"name": "CANCEL ORDER",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const newAccessToken = responseHeaders['x-access-token']\r",
+									"if(newAccessToken) {\r",
+									"    console.log('Set new access token')\r",
+									"    postman.setEnvironmentVariable(\"accessToken\", newAccessToken)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"canceledReason\": \"Không còn nhu cầu\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "{{endpoint}}/api/v1/order/cancel/12",
+							"raw": "{{endpoint}}/api/v1/order/cancel/633d53f7259e11607aa4cb17",
 							"host": [
 								"{{endpoint}}"
 							],
@@ -2267,7 +2322,271 @@
 								"v1",
 								"order",
 								"cancel",
-								"12"
+								"633d53f7259e11607aa4cb17"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Review",
+			"item": [
+				{
+					"name": "CREATE REVIEW",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"reviews\": [\r\n        {\r\n            \"orderItemId\":\"633dbcdd52c8cfe12c3a9879\",\r\n            \"content\":\"Thời gian giao hàng nhanh lắm\",\r\n            \"star\":5\r\n        },\r\n        {\r\n            \"orderItemId\":\"633dbcdd52c8cfe12c3a987a\",\r\n            \"content\":\"Sản phẩm tốt, giao hàng nhanh\",\r\n            \"star\":5\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/v1/review/new",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"review",
+								"new"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET ALL REVIEW",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/reviews",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reviews"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET REVIEW",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/review/633d7d1ff3046da0b883bb69",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"review",
+								"633d7d1ff3046da0b883bb69"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET ALL REVIEW BY PRODUCT",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/reviews/63370adc5ba35494fc385ae9",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reviews",
+								"63370adc5ba35494fc385ae9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UPDATE REVIEW",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"content\":\"Sản phẩm tuyệt vời !\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/v1/review/633d7d1ff3046da0b883bb69",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"review",
+								"633d7d1ff3046da0b883bb69"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SOFT DELTE REVIEW",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/review/633d7d1ff3046da0b883bb69",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"review",
+								"633d7d1ff3046da0b883bb69"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RESTORE REVIEW",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/review/restore/633d7d1ff3046da0b883bb69",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"review",
+								"restore",
+								"633d7d1ff3046da0b883bb69"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "FORCE DESTROY REVIEW",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/review/force/633dc76d5d51a43a7ad9cc6f",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"review",
+								"force",
+								"633dc76d5d51a43a7ad9cc6f"
 							]
 						}
 					},

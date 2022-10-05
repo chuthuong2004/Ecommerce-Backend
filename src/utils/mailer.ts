@@ -21,12 +21,12 @@ const transporter = nodemailer.createTransport({
   ...smtp,
   auth: { user: smtp.user, pass: smtp.pass },
 });
-interface PayloadMailer {
+export interface IPayloadMailer {
   email: string;
   subject: string;
   message: string;
 }
-async function sendEmail(payload: PayloadMailer) {
+async function sendEmail(payload: IPayloadMailer) {
   const mailOptions: SendMailOptions = {
     from: smtp.user,
     to: payload.email,

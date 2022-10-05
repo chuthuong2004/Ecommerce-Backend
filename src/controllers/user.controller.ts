@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { get, omit } from "lodash";
 import log from "../logger";
 import UserModel from "../models/user.model";
@@ -12,39 +12,48 @@ import {
   updateUser,
 } from "../services/user.service";
 import { QueryOption } from "../utils/ApiFeatures";
+import HttpException from "../utils/httpException";
 
 // * REGISTER
-export async function createUserHandler(req: Request, res: Response) {
+export async function createUserHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const user = await createUser(req.body);
-    if (!user) return res.status(409).json({ message: "Email đã tồn tại !" });
-    return res.status(200).json({
+    if (!user) return next(new HttpException(409, "Email đã tồn tại !"));
+    res.json({
       message: "Tạo tài khoản thành công !",
       data: omit(user.toJSON(), "password"),
     });
-  } catch (e: any) {
-    log.error(e);
-    return res.status(409).send(e.message);
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
   }
 }
 // * FORGOT PASSWORD
-export async function forgotPasswordHandler(req: Request, res: Response) {
+export async function forgotPasswordHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const email = req.body.email;
     const newPassword = await forgotPassword(email);
-    if (!newPassword) {
-      return res.status(404).json({ message: "Email không tồn tại !" });
-    }
-    return res
-      .status(200)
-      .json({ message: `Mật khẩu mới đã gửi về email [${email}] của bạn !` });
-  } catch (error) {
-    res.status(500).json({ error: error });
+    if (!newPassword)
+      return next(new HttpException(404, "Email không tồn tại !"));
+    res.json({ message: `Mật khẩu mới đã gửi về email [${email}] của bạn !` });
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
   }
 }
 
 // CHANGE PASSWORD
-export async function changePasswordHandler(req: Request, res: Response) {
+export async function changePasswordHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const userId = get(req, "user.userId");
     const result = await changePassword({
@@ -52,43 +61,48 @@ export async function changePasswordHandler(req: Request, res: Response) {
       currentPassword: get(req.body, "currentPassword"),
       newPassword: get(req.body, "newPassword"),
     });
-    return res.status(result.statusCode).json({
-      message: result.message,
-    });
-  } catch (error) {
-    res.status(500).json({ error: error });
+    next(new HttpException(result.statusCode, result.message));
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
   }
 }
 // ! GET ALL USER
 export async function getAllUserHandler(
   req: Request<{}, {}, {}, QueryOption>,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) {
   try {
     const users = await getAllUsers(req.query);
-    res.status(200).json({
-      success: true,
+    res.json({
       countDocument: users.length,
       resultPerPage: req.query.limit ? req.query.limit * 1 : 0,
       data: users,
     });
-  } catch (error) {
-    res.status(500).json({ error: error });
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
   }
 }
 
-export async function getUserHandler(req: Request, res: Response) {
+export async function getUserHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const userId = get(req.params, "userId");
     const user = await getUser({ _id: userId });
-    if (!user)
-      return res.status(404).json({ message: "Không tìm thấy user !" });
-    return res.status(200).json(user);
-  } catch (error) {
-    return res.status(500).json(error);
+    if (!user) return next(new HttpException(404, "Không tìm thấy user"));
+    res.json(user);
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
   }
 }
-export async function updateUserRoleHandler(req: Request, res: Response) {
+export async function updateUserRoleHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     await updateUser(
       { _id: get(req.params, "userId") },
@@ -99,28 +113,34 @@ export async function updateUserRoleHandler(req: Request, res: Response) {
         useFindAndModify: true,
       }
     );
-    return res.status(200).json({ message: "Cập nhật user thành công !" });
-  } catch (error) {
-    res.status(500).json({ error });
+    next(new HttpException(200, "Cập nhật quyền user thành công !"));
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
   }
 }
-export async function deleteUserHandler(req: Request, res: Response) {
+export async function deleteUserHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     await deleteUser(get(req.params, "userId"));
-    return res.status(200).json({ message: "Xóa user thành công !" });
-  } catch (error) {
-    res.status(500).json({ error: error });
+    next(new HttpException(200, "Xóa user thành công !"));
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
   }
 }
-export async function getProfileHandler(req: Request, res: Response) {
+export async function getProfileHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const userId = get(req, "user.userId");
     const user = await getUser({ _id: userId });
-    if (!user) {
-      return res.status(404).json({ message: "Không tìm thấy user !" });
-    }
-    return res.status(200).json(user);
-  } catch (error) {
-    return res.status(500).json({ error });
+    if (!user) return next(new HttpException(404, "Không tìm thấy user !"));
+    res.json(user);
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
   }
 }

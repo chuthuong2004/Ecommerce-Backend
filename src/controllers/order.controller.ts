@@ -1,14 +1,16 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { get } from "lodash";
-import log from "../logger";
 import { OrderDocument } from "../models/order.model";
 import {
+  cancelOrder,
   createOrder,
+  deleteOrder,
   getAllOrder,
   getOrder,
   updateStatusOrder,
 } from "../services/order.service";
 import { QueryOption } from "../utils/ApiFeatures";
+import HttpException from "../utils/httpException";
 
 export async function createOrderHandler(
   req: Request<
@@ -17,7 +19,8 @@ export async function createOrderHandler(
     OrderDocument & { cartItemsId: string[] },
     {}
   >,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) {
   try {
     console.log(req.body);
@@ -28,14 +31,15 @@ export async function createOrderHandler(
       cartItemsId,
       get(req, "user.userId")
     );
-    res.json(order);
-  } catch (error) {
-    res.status(500).json({ error: error });
+    res.status(201).json(order);
+  } catch (error: any) {
+    next(new HttpException(404, error.message));
   }
 }
 export async function getAllOrderHandler(
   req: Request<{}, {}, {}, QueryOption>,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) {
   try {
     const orders = await getAllOrder({}, req.query);
@@ -51,13 +55,14 @@ export async function getAllOrderHandler(
       resultPerPage: req.query.limit ? req.query.limit * 1 : 0,
       data: orders,
     });
-  } catch (error) {
-    res.status(500).json({ error: error });
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
   }
 }
 export async function getMyOrderHandler(
   req: Request<{}, {}, {}, QueryOption>,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) {
   try {
     const orders = await getAllOrder(
@@ -68,7 +73,7 @@ export async function getMyOrderHandler(
     );
     console.log(orders);
     if (!orders || orders.length == 0) {
-      return res.status(404).json({ message: "Không tìm thấy đơn đặt hàng !" });
+      next(new HttpException(404, "Không tìm thấy đơn đặt hàng !"));
     }
     // tổng tiền tất cả đơn hàng
     const totalAmount: number = orders.reduce(
@@ -81,35 +86,72 @@ export async function getMyOrderHandler(
       resultPerPage: req.query.limit ? req.query.limit * 1 : 0,
       data: orders,
     });
-  } catch (error) {
-    res.status(500).json({ error: error });
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
   }
 }
-export async function getOrderHandler(req: Request, res: Response) {
+export async function getOrderHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
-    const order = await getOrder(req.params.orderId);
+    const order = await getOrder({ _id: req.params.orderId });
     if (!order) {
-      return res.status(404).json({ message: "Order not found" });
+      return next(new HttpException(404, "Không tìm thấy đơn hàng !"));
     }
     res.json(order);
-  } catch (error) {
-    res.status(500).json({ error: error });
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
   }
 }
-export async function updateOrderHandler(req: Request, res: Response) {
+export async function updateStatusOrderHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
-    const updated = await updateStatusOrder(
+    const updated: any = await updateStatusOrder(
       get(req.params, "orderId"),
       get(req.body, "orderStatus")
     );
+    if (updated.message) {
+      return next(new HttpException(updated.statusCode, updated.message));
+    }
     res.json(updated);
-  } catch (error) {
-    res.status(500).json({ error: error });
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
   }
 }
-export async function deleteOrderHandler(req: Request, res: Response) {
+export async function cancelOrderHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
-  } catch (error) {
-    res.status(500).json({ error: error });
+    const canceledReason = req.body.canceledReason;
+    const canceledOrder = await cancelOrder(
+      get(req.params, "orderId"),
+      get(req, "user.userId"),
+      canceledReason
+    );
+    next(new HttpException(canceledOrder.statusCode, canceledOrder.message));
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
+  }
+}
+export async function deleteOrderHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const deleted = await deleteOrder(
+      get(req.params, "orderId"),
+      get(req, "user.userId")
+    );
+    next(new HttpException(deleted.statusCode, deleted.message));
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
   }
 }
