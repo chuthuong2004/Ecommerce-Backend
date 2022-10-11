@@ -1,5 +1,5 @@
 export default {
-  port: 1337,
+  port: process.env.PORT || 1337,
   host: "localhost",
   dbUri:
     "mongodb+srv://chuthuong1080:105870820196Thuong@cluster0.zy4fa.mongodb.net/chuthuong-online?retryWrites=true&w=majority",
