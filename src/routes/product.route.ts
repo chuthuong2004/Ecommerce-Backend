@@ -5,12 +5,14 @@ import {
   deleteProductHandler,
   forceDestroyProductHandler,
   getAllProductHandler,
+  getProductBySlugHandler,
   getProductHandler,
   removeFavoriteHandler,
   restoreProductHandler,
   updateProductHandler,
 } from "../controllers/product.controller";
 import { requiresAdmin, requiresUser, validateRequest } from "../middlewares";
+import ProductModel from "../models/product.model";
 import {
   createProductSchema,
   deleteProductSchema,
@@ -34,6 +36,11 @@ router.get(
   "/product/:productId",
   validateRequest(getProductSchema),
   getProductHandler
+);
+router.get(
+  "/product/slug/:slug",
+  // validateRequest(getProductSchema),
+  getProductBySlugHandler
 );
 
 // * UPDATE PRODUCT ---- ADMIN ---DONE
@@ -73,9 +80,16 @@ router.delete(
 
 // ! DELETE PRODUCT ---- delete image
 router.delete(
-  "/admin/product/force/:id",
+  "/admin/product/force/:productId",
   [requiresAdmin, validateRequest(deleteProductSchema)],
   forceDestroyProductHandler
 );
-
+router.put("/updateMany", async (req, res) => {
+  try {
+    await ProductModel.updateMany({ gender: "woman" }, { gender: "women" });
+    res.send("ok");
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+});
 export default router;

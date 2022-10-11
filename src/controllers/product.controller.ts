@@ -54,7 +54,7 @@ export async function getProductHandler(
   next: NextFunction
 ) {
   try {
-    const product = await getProduct(get(req.params, "productId"));
+    const product = await getProduct({ _id: get(req.params, "productId") });
     if (!product) {
       return next(new HttpException(400, "Không tìm thấy product !"));
     }
@@ -63,6 +63,22 @@ export async function getProductHandler(
     next(new HttpException(500, error.message));
   }
 }
+export async function getProductBySlugHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const product = await getProduct({ slug: get(req.params, "slug") });
+    if (!product) {
+      return next(new HttpException(400, "Không tìm thấy product !"));
+    }
+    res.json(product);
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
+  }
+}
+
 // * UPDATE PRODUCT --- DONE
 export async function updateProductHandler(
   req: Request,

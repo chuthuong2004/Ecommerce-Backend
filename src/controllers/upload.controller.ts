@@ -21,13 +21,10 @@ export function uploadProductHandler(
   next: NextFunction
 ) {
   try {
-    if (req.files && req.files.length > 0) {
-      return res.json({
-        message: "Đã upload nhiều hình ảnh thành công !",
-        files: req.files,
-      });
-    }
-    next(new HttpException(401, "Upload hình ảnh thất bại !"));
+    return res.json({
+      message: "Đã upload nhiều hình ảnh thành công !",
+      files: req.files,
+    });
   } catch (error: any) {
     next(new HttpException(500, error.message));
   }

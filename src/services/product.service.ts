@@ -41,7 +41,10 @@ export async function getAllProduct(
   query: QueryOption
 ): Promise<Array<CatalogDocument>> {
   try {
-    const features = new APIFeatures(ProductModel.find(), query)
+    const features = new APIFeatures(
+      ProductModel.find().populate({ path: "brand", select: "-products" }),
+      query
+    )
       .paginating()
       .sorting()
       .searching()
@@ -51,9 +54,11 @@ export async function getAllProduct(
     throw error;
   }
 }
-export async function getProduct(productId: string) {
+export async function getProduct(filter: FilterQuery<ProductDocument>) {
   try {
-    const product = await ProductModel.findById(productId)
+    console.log(filter);
+
+    const product = await ProductModel.findOne(filter)
       .populate("brand")
       .populate("category");
     return product;

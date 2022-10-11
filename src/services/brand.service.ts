@@ -30,6 +30,10 @@ export async function getBrand(brandId: string) {
   try {
     const brand = await BrandModel.findById(brandId).populate({
       path: "products",
+      populate: {
+        path: "brand",
+        select: "-products",
+      },
     });
     return brand;
   } catch (error) {

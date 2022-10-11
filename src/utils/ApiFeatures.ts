@@ -56,6 +56,8 @@ class APIFeatures {
   }
   public filtering() {
     const queryObj = { ...this.queryString };
+    console.log(queryObj);
+
     const excludedField = [
       EQueryOption.PAGE,
       EQueryOption.SORT,
@@ -63,7 +65,9 @@ class APIFeatures {
       EQueryOption.SEARCH,
     ];
     excludedField.forEach((item) => delete queryObj[item]);
+    console.log(queryObj);
     let queryStr = JSON.stringify(queryObj);
+    console.log(queryStr);
     queryStr = queryStr.replace(
       /\b(gte|gt|lt|lte|regex)\b/g,
       (match) => "$" + match

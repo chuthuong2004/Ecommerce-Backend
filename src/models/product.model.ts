@@ -23,7 +23,7 @@ export interface IColor {
   _id: Types.ObjectId;
 }
 export enum EGenderType {
-  Woman = "woman",
+  Woman = "women",
   Man = "man",
   Kid = "kid",
   Unisex = "unisex",
