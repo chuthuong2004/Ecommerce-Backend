@@ -102,7 +102,7 @@ export async function updateProductHandler(
 }
 export enum ActionFavorite {
   ADD = "add",
-  REMOVE = "remove",
+  REMOVE = "remove"
 }
 export async function addFavoriteHandler(
   req: Request,
@@ -110,17 +110,15 @@ export async function addFavoriteHandler(
   next: NextFunction
 ) {
   try {
-    const favorite: IFavorite = get(req.body, "favorite");
     const product = await handleFavorite(
       get(req.params, "productId"),
       get(req, "user.userId"),
-      ActionFavorite.ADD,
-      favorite ? favorite : null
+      ActionFavorite.ADD
     );
     if (!product)
       return next(new HttpException(404, "Không tìm thấy product !"));
     res.json({
-      message: "Thêm yêu thích sản phẩm thành công !",
+      message: "Đã thêm sản phẩm vào danh sách yêu thích !",
       data: product,
     });
   } catch (error: any) {
@@ -141,7 +139,10 @@ export async function removeFavoriteHandler(
 
     if (!product)
       return next(new HttpException(404, "Không tìm thấy product !"));
-    res.json({ message: "Bỏ yêu thích sản phẩm thành công !", data: product });
+    res.json({
+      message: "Đã xóa sản phẩm khỏi danh sách yêu thích !",
+      data: product,
+    });
   } catch (error: any) {
     next(new HttpException(500, error.message));
   }

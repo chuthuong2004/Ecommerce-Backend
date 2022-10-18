@@ -31,7 +31,14 @@ export async function validatePassword({
   password: string;
 }) {
   try {
-    const user = await UserModel.findOne({ email });
+    const user = await UserModel.findOne({ email }).populate({
+      path: "favorites",
+      populate: {
+        path: "product",
+        select: "_id name price discount colors brand slug",
+        populate: { path: "brand", select: "_id name" },
+      },
+    });
     if (!user) {
       return false;
     }
@@ -126,6 +133,14 @@ export async function getUser(queryFilter: FilterQuery<UserDocument>) {
       .select("-password")
       // .populate("reviews")
       .populate("cart")
+      .populate({
+        path: "favorites",
+        populate: {
+          path: "product",
+          select: "_id name price discount colors brand slug",
+          populate: { path: "brand", select: "_id name" },
+        },
+      })
       .lean();
     // .populate("orders");
     return user;

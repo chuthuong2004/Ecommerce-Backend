@@ -133,8 +133,7 @@ export async function updateProduct(
 export async function handleFavorite(
   productId: string,
   userId: string,
-  actionFavorite: string,
-  favorite?: IFavorite | null
+  actionFavorite: string
 ): Promise<ProductDocument | null> {
   try {
     let updateProduct =
@@ -152,25 +151,22 @@ export async function handleFavorite(
     if (!product) return null;
     product.likeCount = product.favorites.length; // gán lại lượt thích bằng độ dài của mảng favorites
 
-    // nếu không truyền vào favorite thì sẽ lấy favorite phần tử thứ 0 của product
-    if (actionFavorite === ActionFavorite.ADD && !favorite) {
-      favorite = {
+    let updateUser;
+    if (actionFavorite === ActionFavorite.ADD) {
+      // nếu không truyền vào favorite thì sẽ lấy favorite phần tử thứ 0 của product
+      const favorite: IFavorite = {
         product: product._id,
         color: product.colors[0].colorName,
         colorId: product.colors[0]?._id,
         size: product.colors[0].sizes[0].size,
         quantity: 1,
       };
-    }
-    // tìm xem product này đã có trong favorite nào của user không nếu có trả về 1 Favorite còn không trả về undefined
-    const favoriteForUser = user?.favorites?.find(
-      (favorite: IFavorite) => favorite.product == productId
-    );
-    let updateUser;
-
-    if (actionFavorite === ActionFavorite.ADD && !favoriteForUser) {
       updateUser = { $push: { favorites: favorite } };
-    } else if (actionFavorite === ActionFavorite.REMOVE && favoriteForUser) {
+    } else if (actionFavorite === ActionFavorite.REMOVE) {
+      // tìm xem product này đã có trong favorite nào của user không nếu có trả về 1 Favorite còn không trả về undefined
+      const favoriteForUser = user?.favorites?.find(
+        (favorite: IFavorite) => favorite.product == productId
+      );
       updateUser = { $pull: { favorites: favoriteForUser } };
     }
     // nếu không có favorite thì mới thêm vào user

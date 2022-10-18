@@ -43,8 +43,6 @@ router.post(
 // * LOGOUT
 // DELETE /api/sessions
 router.delete("/users/logout", requiresUser, invalidateUserSessionHandler);
-// GET /api/posts
-
 // * GET THE USER'S SESSIONS
 // GET /api/sessions
 router.get("/sessions", requiresUser, getUserSessionHandler);

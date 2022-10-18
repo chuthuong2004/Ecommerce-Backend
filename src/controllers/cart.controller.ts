@@ -75,6 +75,14 @@ export async function addItemToCartHandler(
       return next(new HttpException(400, "Thêm giỏ hàng không thành công !"));
     if (cart?.message)
       return next(new HttpException(cart.statusCode, cart.message));
+    await cart.populate({
+      path: "cartItems",
+      populate: {
+        path: "product",
+        select: "_id name price discount colors brand slug",
+        populate: { path: "brand", select: "_id name" },
+      },
+    });
     res.json({ message: "Thêm vào giỏ hàng thành công !", data: cart });
   } catch (error: any) {
     next(new HttpException(500, error.message));
@@ -94,6 +102,14 @@ export async function removeItemFromCartHandler(
       return next(new HttpException(400, "Xóa cart item không thành công !"));
     if (cart.message)
       return next(new HttpException(cart.statusCode, cart.message));
+    await cart.populate({
+      path: "cartItems",
+      populate: {
+        path: "product",
+        select: "_id name price discount colors brand slug",
+        populate: { path: "brand", select: "_id name" },
+      },
+    });
     res.json(cart);
   } catch (error: any) {
     next(new HttpException(500, error.message));
@@ -113,6 +129,14 @@ export async function updateCartHandler(
     if (!cart) return next(new HttpException(400, "Lỗi update cart !"));
     if (cart.message)
       return next(new HttpException(cart.statusCode, cart.message));
+    await cart.populate({
+      path: "cartItems",
+      populate: {
+        path: "product",
+        select: "_id name price discount colors brand slug",
+        populate: { path: "brand", select: "_id name" },
+      },
+    });
     res.json(cart);
   } catch (error: any) {
     next(new HttpException(500, error.message));

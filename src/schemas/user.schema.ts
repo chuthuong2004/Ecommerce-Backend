@@ -1,9 +1,6 @@
 import { object, string, ref } from "yup";
 export const createUserSchema = object({
   body: object({
-    email: string()
-      .email("Vui lòng nhập địa chỉ email hợp lệ !")
-      .required("Vui lòng nhập địa chỉ email !"),
     phone: string()
       .required("Vui lòng nhập số điện thoại !")
       .matches(
@@ -17,6 +14,10 @@ export const createUserSchema = object({
         /^[a-zA-Z0-9_.-]*$/,
         "Mật khẩu chỉ có thể chứa các chữ cái Latinh !"
       ),
+    email: string()
+      .email("Vui lòng nhập địa chỉ email hợp lệ !")
+      .required("Vui lòng nhập địa chỉ email !"),
+
     // passwordConfirmation: string().oneOf(
     //   [ref("password"), null],
     //   "Password must match"

@@ -5,7 +5,7 @@ import { ProductDocument } from "./product.model";
 export interface ICartItem {
   product: ProductDocument["_id"];
   quantity: number;
-  size: string;
+  size: string | number;
   color: string;
   image: string;
   createdAt: Date;
@@ -32,7 +32,7 @@ const CartSchema = new mongoose.Schema<CartDocument>(
           required: true,
         },
         quantity: { type: Number, default: 1 },
-        size: { type: String },
+        size: { type: String || Number },
         color: { type: String },
         image: { type: String },
       },

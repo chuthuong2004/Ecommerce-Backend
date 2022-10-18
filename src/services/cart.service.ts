@@ -42,7 +42,7 @@ export async function getCart(filter: FilterQuery<CartDocument>) {
         path: "cartItems",
         populate: {
           path: "product",
-          select: "_id name price discount colors brand",
+          select: "_id name price discount colors brand slug",
           populate: { path: "brand", select: "_id name" },
         },
       });

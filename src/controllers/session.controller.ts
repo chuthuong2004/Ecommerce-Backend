@@ -51,9 +51,10 @@ export async function invalidateUserSessionHandler(
   next: NextFunction
 ) {
   try {
-    const sessionId = get(req, "user.session");
-    await updateSession({ _id: sessionId }, { valid: false });
-    res.json({ message: "Đăng xuất thành công !" });
+    const sessionId = get(req, "user.sessionId");
+    const session = await updateSession({ _id: sessionId }, { valid: false });
+    if (session) return res.json({ message: "Đăng xuất thành công !" });
+    next(new HttpException(400, "Không tìm thấy session"));
   } catch (error: any) {
     next(new HttpException(500, error.message));
   }
