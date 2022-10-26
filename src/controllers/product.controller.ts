@@ -102,7 +102,7 @@ export async function updateProductHandler(
 }
 export enum ActionFavorite {
   ADD = "add",
-  REMOVE = "remove"
+  REMOVE = "remove",
 }
 export async function addFavoriteHandler(
   req: Request,
