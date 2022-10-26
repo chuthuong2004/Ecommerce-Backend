@@ -1,14 +1,16 @@
 import { NextFunction, Request, Response } from "express";
 import { get, omit } from "lodash";
 import log from "../logger";
-import UserModel from "../models/user.model";
+import UserModel, { IAddress } from "../models/user.model";
 import {
+  addAddress,
   changePassword,
   createUser,
   deleteUser,
   forgotPassword,
   getAllUsers,
   getUser,
+  updateAddress,
   updateUser,
 } from "../services/user.service";
 import { QueryOption } from "../utils/ApiFeatures";
@@ -140,6 +142,46 @@ export async function getProfileHandler(
     const user = await getUser({ _id: userId });
     if (!user) return next(new HttpException(404, "Không tìm thấy user !"));
     res.json(user);
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
+  }
+}
+export async function addAddressHandler(
+  req: Request<{}, IAddress, IAddress, {}>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const addressInput: IAddress = req.body;
+    const result: any = await addAddress(addressInput, get(req, "user.userId"));
+    if (!result) {
+      next(new HttpException(400, "Lỗi thêm địa chỉ !"));
+    }
+    if (result.message) {
+      next(new HttpException(result.statusCode, result.message));
+    }
+    res.json({ message: "Thêm địa chỉ thành công !" });
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
+  }
+}
+
+export async function updateAddressHandler(
+  req: Request<{}, IAddress, IAddress, {}>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const addressUpdate: IAddress = req.body;
+    const result: any = await updateAddress(
+      addressUpdate,
+      get(req.params, "addressId"),
+      get(req, "user.userId")
+    );
+    if (result?.message) {
+      next(new HttpException(result.statusCode, result.message));
+    }
+    res.json({ message: "Cập nhật địa chỉ thành công !" });
   } catch (error: any) {
     next(new HttpException(500, error.message));
   }

@@ -9,10 +9,10 @@ import OrderModel, {
   IOrderItem,
   OrderDocument,
 } from "../models/order.model";
-import { IAddress } from "../models/user.model";
+import { IAddress, UserDocument } from "../models/user.model";
 import { deleteCart, getCart, removeItemFromCart } from "./cart.service";
 import { ICartItem } from "./../models/cart.model";
-import { updateUser } from "./user.service";
+import { addAddress, getUser, updateUser } from "./user.service";
 import APIFeatures, { QueryOption } from "../utils/ApiFeatures";
 import sendEmail, { IPayloadMailer } from "../utils/mailer";
 import { getProduct } from "./product.service";
@@ -28,7 +28,10 @@ export async function createOrder(
     const deliveryInformation: IAddress = input.deliveryInformation;
     const isPaid = input.isPaid;
     let shippingPrice: number = input.shippingPrice;
-    const cart = await getCart({ user: userId });
+    const [cart, user] = await Promise.all([
+      getCart({ user: userId }),
+      getUser({ _id: userId }),
+    ]);
     if (!cart) {
       return { statusCode: 404, message: "Không tìm thấy giỏ hàng !" };
     }
@@ -99,7 +102,20 @@ export async function createOrder(
     // * handle here --- DONE
     // cập nhật lại số lượng sản phẩm đã đặt (số lượng sp hiện tại trừ cho sl sp được đặt)
     updateQuantityProductOfColor(newOrder.orderItems, ActionFavorite.REMOVE);
-    await updateUser({ _id: userId }, { $push: { orders: newOrder._id } });
+    if (user?.addresses?.length === 0) {
+      const res = await addAddress(deliveryInformation, user._id);
+    }
+    await sendEmail({
+      email: user?.email || "",
+      message: `
+        <div>Xin chào quý khách ${newOrder.deliveryInformation.firstName} ${newOrder.deliveryInformation.lastName}</div>
+        <div>Cảm ơn bạn đã mua hàng tại <a href="http://localhost:3000/">www.chuthuongonline.vn</a></div>
+        <div>Chúng tôi xin thông báo, đơn hàng <b>${newOrder.orderId}</b> đã được tiếp nhận và đang trong quá trình xử lý.</div>
+
+      `,
+      subject: `Thông báo xác nhận đơn hàng ${newOrder.orderId}`,
+    }),
+      await updateUser({ _id: userId }, { $push: { orders: newOrder._id } });
     return newOrder;
   } catch (error) {
     throw error;

@@ -29,8 +29,8 @@ router.post(
 router.get("/order/me", requiresUser, getMyOrderHandler);
 // GET ORDER
 router.get(
-  "/admin/order/:orderId",
-  [requiresAdmin, validateRequest(getOrderSchema)],
+  "/order/:orderId",
+  [requiresUser, validateRequest(getOrderSchema)],
   getOrderHandler
 );
 // GET ALL ORDER

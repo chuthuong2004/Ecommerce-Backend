@@ -5,7 +5,7 @@ import {
   QueryOptions,
   UpdateQuery,
 } from "mongoose";
-import UserModel, { UserDocument } from "../models/user.model";
+import UserModel, { IAddress, UserDocument } from "../models/user.model";
 import APIFeatures, { QueryOption } from "../utils/ApiFeatures";
 import sendEmail from "../utils/mailer";
 import bcrypt from "bcrypt";
@@ -129,7 +129,7 @@ export async function getAllUsers(
 }
 export async function getUser(queryFilter: FilterQuery<UserDocument>) {
   try {
-    const user = await UserModel.findOne(queryFilter)
+    return await UserModel.findOne(queryFilter)
       .select("-password")
       // .populate("reviews")
       .populate("cart")
@@ -140,10 +140,7 @@ export async function getUser(queryFilter: FilterQuery<UserDocument>) {
           select: "_id name price discount colors brand slug",
           populate: { path: "brand", select: "_id name" },
         },
-      })
-      .lean();
-    // .populate("orders");
-    return user;
+      });
   } catch (error) {
     throw error;
   }
@@ -154,11 +151,137 @@ export async function updateUser(
   options?: QueryOptions<UserDocument>
 ) {
   try {
-    await UserModel.findOneAndUpdate(filter, update, options);
+    return await UserModel.findOneAndUpdate(filter, update, options);
   } catch (error) {
     throw error;
   }
 }
 export async function deleteUser(id: string) {
   await UserModel.findByIdAndDelete(id);
+}
+export async function addAddress(
+  addressInput: IAddress,
+  userId: string
+): Promise<UserDocument | null | { statusCode: number; message: string }> {
+  try {
+    if (addressInput.isDefault) {
+      await updateUser(
+        {
+          _id: userId,
+          "addresses.isDefault": addressInput.isDefault,
+        },
+        {
+          $set: {
+            "addresses.$.isDefault": false,
+            firstName: addressInput.firstName,
+            lastName: addressInput.lastName,
+            phone: addressInput.phone,
+          },
+        }
+      );
+    }
+    const user = await getUser({ _id: userId });
+    if (user?.addresses?.length === 0) {
+      addressInput.isDefault = true;
+      user.firstName = addressInput.firstName;
+      user.lastName = addressInput.lastName;
+      user.phone = addressInput.phone;
+      await user.save();
+    }
+    const addressItem = user?.addresses?.find(
+      (address: IAddress) =>
+        address.firstName === addressInput.firstName &&
+        address.lastName === addressInput.lastName &&
+        address.phone === addressInput.phone &&
+        address.province === addressInput.province &&
+        address.district === addressInput.district &&
+        address.ward === addressInput.ward &&
+        address.address === addressInput.address
+    );
+    if (addressItem) {
+      return {
+        statusCode: 400,
+        message: "Địa chỉ đã tồn tại !",
+      };
+    }
+    return await updateUser(
+      { _id: userId },
+      { $push: { addresses: addressInput } },
+      { new: true }
+    );
+  } catch (error) {
+    throw error;
+  }
+}
+export async function updateAddress(
+  addressUpdate: IAddress,
+  addressId: string,
+  userId: string
+): Promise<UserDocument | null | { statusCode: number; message: string }> {
+  try {
+    const user = await getUser({ _id: userId });
+    if (!user) {
+      return {
+        statusCode: 404,
+        message: "Không tìm thấy người dùng !",
+      };
+    }
+    const address = user.addresses?.find(
+      (item: IAddress) => String(item._id) === addressId
+    );
+    if (!address) {
+      return {
+        statusCode: 404,
+        message: "Không tìm thấy địa chỉ của bạn !",
+      };
+    }
+    if (addressUpdate.isDefault) {
+      await updateUser(
+        {
+          _id: userId,
+          "addresses.isDefault": addressUpdate.isDefault,
+        },
+        {
+          $set: {
+            "addresses.$.isDefault": false,
+          },
+        }
+      );
+    } else {
+      if (address.isDefault && user.addresses) {
+        await updateUser(
+          {
+            _id: userId,
+            "addresses._id": user.addresses[0]._id,
+          },
+          {
+            $set: {
+              "addresses.$.isDefault": true,
+            },
+          }
+        );
+      }
+    }
+
+    return await updateUser(
+      {
+        _id: userId,
+        "addresses._id": addressId,
+      },
+      {
+        $set: {
+          "addresses.$.isDefault": addressUpdate.isDefault,
+          "addresses.$.firstName": addressUpdate.firstName,
+          "addresses.$.lastName": addressUpdate.lastName,
+          "addresses.$.phone": addressUpdate.phone,
+          "addresses.$.province": addressUpdate.province,
+          "addresses.$.district": addressUpdate.district,
+          "addresses.$.ward": addressUpdate.ward,
+          "addresses.$.address": addressUpdate.address,
+        },
+      }
+    );
+  } catch (error) {
+    throw error;
+  }
 }

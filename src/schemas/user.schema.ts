@@ -1,4 +1,25 @@
 import { object, string, ref } from "yup";
+const payloadAddress = {
+  body: object({
+    address: string().required("Vui lòng nhập địa chỉ"),
+    ward: string().required("Vui lòng chọn phường / xã !"),
+    district: string().required("Vui lòng chọn quận / huyện !"),
+    province: string().required("Vui lòng chọn tỉnh / thành !"),
+    phone: string()
+      .required("Vui lòng nhập số điện thoại !")
+      .matches(
+        /^(03|09|08|07)[0-9]{8}$/,
+        "Vui lòng nhập số điện thoại hợp lệ !"
+      ),
+    lastName: string().required("Vui lòng nhập lastName !"),
+    firstName: string().required("Vui lòng nhập firstName !"),
+  }),
+};
+const paramsAddress = {
+  params: object({
+    addressId: string().required("addressId is required"),
+  }),
+};
 export const createUserSchema = object({
   body: object({
     phone: string()
@@ -64,4 +85,11 @@ export const createUserSessionSchema = object({
       .email("Vui lòng nhập địa chỉ email hợp lệ !")
       .required("Vui lòng nhập địa chỉ email !"),
   }),
+});
+export const addAddressSchema = object({
+  ...payloadAddress,
+});
+export const updateAddressSchema = object({
+  ...payloadAddress,
+  ...paramsAddress,
 });

@@ -48,6 +48,7 @@ export interface IAddress {
   district: string;
   ward: string;
   address: string;
+  isDefault: boolean;
   _id: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;

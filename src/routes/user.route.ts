@@ -1,9 +1,11 @@
 import { requiresAdmin, requiresUser, validateRequest } from "../middlewares";
 import {
+  addAddressSchema,
   createChangePasswordSchema,
   createForgotPassword,
   createUserSchema,
   createUserSessionSchema,
+  updateAddressSchema,
 } from "../schemas/user.schema";
 import express from "express";
 import {
@@ -12,6 +14,7 @@ import {
   invalidateUserSessionHandler,
 } from "../controllers/session.controller";
 import {
+  addAddressHandler,
   changePasswordHandler,
   createUserHandler,
   deleteUserHandler,
@@ -19,6 +22,7 @@ import {
   getAllUserHandler,
   getProfileHandler,
   getUserHandler,
+  updateAddressHandler,
   updateUserRoleHandler,
 } from "../controllers/user.controller";
 
@@ -64,12 +68,23 @@ router.post(
 router.get("/me", requiresUser, getProfileHandler);
 
 // ! UPDATE USER
-// router.put(
-//   "/me/update",
-//   requiresUser,
-//   upload.single("avatar"),
-//   userController.updateProfile
-// );
+router.put(
+  "/me/update",
+  requiresUser
+  // updateProfile
+);
+
+// ADD ADDRESS
+router.post(
+  "/me/addresses/add",
+  [requiresUser, validateRequest(addAddressSchema)],
+  addAddressHandler
+);
+router.put(
+  "/me/addresses/:addressId",
+  [requiresUser, validateRequest(updateAddressSchema)],
+  updateAddressHandler
+);
 
 // =============================ADMIN====================================
 // * GET ALL USER ---- Admin
