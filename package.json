@@ -6,7 +6,9 @@
   "author": "van thuong",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon --config nodemon.json src/index.ts"
+    "dev": "nodemon --config nodemon.json src/index.ts",
+    "postinstall": "tsc",
+    "start": "node build/index.js"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
