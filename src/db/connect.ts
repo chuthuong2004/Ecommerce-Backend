@@ -1,17 +1,19 @@
 import mongoose, { ConnectOptions } from "mongoose";
-import config from "config";
+import config from "../config/default";
 import log from "../logger";
 
 function connect() {
-  const dbUri = config.get("dbUri") as string;
+  const dbUri = config.dbUri as string;
 
-  return mongoose.connect(dbUri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  } as ConnectOptions)
+  return mongoose
+    .connect(dbUri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    } as ConnectOptions)
     .then(() => {
       log.info("Database connected");
-    }).catch((error) => {
+    })
+    .catch((error) => {
       log.error("db error", error);
       process.exit(1);
     });

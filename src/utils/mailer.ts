@@ -1,6 +1,7 @@
 import nodemailer, { SendMailOptions } from "nodemailer";
-import config from "config";
+// import config from "config";
 import log from "../logger";
+import config from "./../config/default";
 
 // async function createTestCreds() {
 //   const creds = await nodemailer.createTestAccount();
@@ -9,13 +10,14 @@ import log from "../logger";
 
 // createTestCreds();
 
-const smtp = config.get<{
-  user: string;
-  pass: string;
-  host: string;
-  port: number;
-  secure: boolean;
-}>("smtp");
+// const smtp = config.get<{
+//   user: string;
+//   pass: string;
+//   host: string;
+//   port: number;
+//   secure: boolean;
+// }>("smtp");
+const smtp = config.smtp;
 
 const transporter = nodemailer.createTransport({
   ...smtp,

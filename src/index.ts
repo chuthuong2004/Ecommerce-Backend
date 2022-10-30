@@ -1,5 +1,4 @@
 import express from "express";
-import config from "config";
 import log from "./logger";
 import connect from "./db/connect";
 import { deserializeUser } from "./middlewares";
@@ -7,8 +6,9 @@ import routes from "./routes";
 import path from "path";
 import cors from "cors";
 import errorMiddleware from "./middlewares/error.middleware";
-const port = config.get("port") as number;
-const host = config.get("host") as string;
+import config from "./config/default";
+const port = config.port as number;
+const host = config.host as string;
 
 const app = express();
 app.use(cors());
