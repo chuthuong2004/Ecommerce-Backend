@@ -120,6 +120,22 @@ export async function updateUserRoleHandler(
     next(new HttpException(500, error.message));
   }
 }
+export async function updateProfileHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const updated = await updateUser(
+      { _id: get(req, "user.userId") },
+      req.body,
+      { new: true }
+    );
+    res.json(updated);
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
+  }
+}
 export async function deleteUserHandler(
   req: Request,
   res: Response,

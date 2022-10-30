@@ -9,7 +9,8 @@ export function uploadSingleHandler(
   try {
     return res.json({
       message: "Đã upload hình ảnh thành công",
-      fileName: req.file?.filename,
+      file: req.file,
+      files: req.files,
     });
   } catch (error: any) {
     next(new HttpException(500, error.message));

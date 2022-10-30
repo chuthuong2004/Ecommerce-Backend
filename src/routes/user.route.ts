@@ -6,6 +6,7 @@ import {
   createUserSchema,
   createUserSessionSchema,
   updateAddressSchema,
+  updateUserSchema,
 } from "../schemas/user.schema";
 import express from "express";
 import {
@@ -23,6 +24,7 @@ import {
   getProfileHandler,
   getUserHandler,
   updateAddressHandler,
+  updateProfileHandler,
   updateUserRoleHandler,
 } from "../controllers/user.controller";
 
@@ -67,11 +69,11 @@ router.post(
 // * GET USER DETAILS
 router.get("/me", requiresUser, getProfileHandler);
 
-// ! UPDATE USER
+//  UPDATE USER
 router.put(
   "/me/update",
-  requiresUser
-  // updateProfile
+  [requiresUser, validateRequest(updateUserSchema)],
+  updateProfileHandler
 );
 
 // ADD ADDRESS

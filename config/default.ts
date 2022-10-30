@@ -1,5 +1,9 @@
+import dotenv from "dotenv";
+dotenv.config();
+
+const PORT = process.env.PORT || 1337;
 export default {
-  port: process.env.PORT || 1337,
+  port: PORT,
   host: "localhost",
   dbUri:
     "mongodb+srv://chuthuong1080:105870820196Thuong@cluster0.zy4fa.mongodb.net/chuthuong-online?retryWrites=true&w=majority",

@@ -93,3 +93,13 @@ export const updateAddressSchema = object({
   ...payloadAddress,
   ...paramsAddress,
 });
+export const updateUserSchema = object({
+  body: object({
+    phone: string()
+      .notRequired()
+      .matches(
+        /^(03|09|08|07)[0-9]{8}$/,
+        "Vui lòng nhập số điện thoại hợp lệ !"
+      ),
+  }),
+});

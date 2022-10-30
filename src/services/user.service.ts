@@ -244,6 +244,9 @@ export async function updateAddress(
         {
           $set: {
             "addresses.$.isDefault": false,
+            firstName: addressUpdate.firstName,
+            lastName: addressUpdate.lastName,
+            phone: addressUpdate.phone,
           },
         }
       );
@@ -257,6 +260,9 @@ export async function updateAddress(
           {
             $set: {
               "addresses.$.isDefault": true,
+              firstName: addressUpdate.firstName,
+              lastName: addressUpdate.lastName,
+              phone: addressUpdate.phone,
             },
           }
         );
