@@ -16,9 +16,9 @@ exports.getUserSessionHandler = exports.invalidateUserSessionHandler = exports.c
 const session_service_1 = require("../services/session.service");
 const user_service_1 = require("../services/user.service");
 const jwt_utils_1 = require("../utils/jwt.utils");
-const config_1 = __importDefault(require("config"));
 const lodash_1 = require("lodash");
 const httpException_1 = __importDefault(require("../utils/httpException"));
+const default_1 = __importDefault(require("./../config/default"));
 // * LOGIN
 function createUserSessionHandler(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -34,7 +34,7 @@ function createUserSessionHandler(req, res, next) {
             const accessToken = (0, session_service_1.createAccessToken)({ user, session });
             // Create refresh token
             const refreshToken = (0, jwt_utils_1.signJwt)({ userId: user._id, isAdmin: user.isAdmin, sessionId: session._id }, {
-                expiresIn: config_1.default.get("refreshTokenTtl"), // 1 year
+                expiresIn: default_1.default.refreshTokenTtl, // 1 year
             });
             // Send refresh & access token back
             res.json(Object.assign(Object.assign({}, user), { accessToken, refreshToken }));

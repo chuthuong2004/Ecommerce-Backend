@@ -7,9 +7,9 @@ import {
 } from "../services/session.service";
 import { validatePassword } from "../services/user.service";
 import { signJwt } from "../utils/jwt.utils";
-import config from "config";
 import { get } from "lodash";
 import HttpException from "../utils/httpException";
+import config from "./../config/default";
 
 // * LOGIN
 export async function createUserSessionHandler(
@@ -33,7 +33,7 @@ export async function createUserSessionHandler(
     const refreshToken = signJwt(
       { userId: user._id, isAdmin: user.isAdmin, sessionId: session._id },
       {
-        expiresIn: config.get<string>("refreshTokenTtl"), // 1 year
+        expiresIn: config.refreshTokenTtl, // 1 year
       }
     );
 
