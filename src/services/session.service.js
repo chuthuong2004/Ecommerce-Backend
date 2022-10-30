@@ -14,10 +14,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.findSessions = exports.updateSession = exports.reIssueAccessToken = exports.createAccessToken = exports.createSession = void 0;
 const session_model_1 = __importDefault(require("../models/session.model"));
-const config_1 = __importDefault(require("config"));
 const jwt_utils_1 = require("../utils/jwt.utils");
 const lodash_1 = require("lodash");
 const user_service_1 = require("./user.service");
+const default_1 = __importDefault(require("./../config/default"));
 function createSession(userId, userAgent) {
     return __awaiter(this, void 0, void 0, function* () {
         const session = yield session_model_1.default.create({ user: userId, userAgent });
@@ -27,7 +27,7 @@ function createSession(userId, userAgent) {
 exports.createSession = createSession;
 function createAccessToken({ user, session, }) {
     // Build and return the new access token
-    const accessToken = (0, jwt_utils_1.signJwt)({ userId: user._id, isAdmin: user.isAdmin, sessionId: session._id }, { expiresIn: config_1.default.get("accessTokenTtl") } // 15 minutes
+    const accessToken = (0, jwt_utils_1.signJwt)({ userId: user._id, isAdmin: user.isAdmin, sessionId: session._id }, { expiresIn: default_1.default.accessTokenTtl } // 15 minutes
     );
     return accessToken;
 }

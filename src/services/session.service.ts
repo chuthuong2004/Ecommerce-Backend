@@ -2,10 +2,10 @@
 import { LeanDocument, FilterQuery, UpdateQuery } from "mongoose";
 import Session, { SessionDocument } from "../models/session.model";
 import { UserDocument } from "../models/user.model";
-import config from "config";
 import { signJwt, verifyJwt } from "../utils/jwt.utils";
 import { get } from "lodash";
 import { getUser } from "./user.service";
+import config from "./../config/default";
 
 export async function createSession(userId: string, userAgent: string) {
   const session = await Session.create({ user: userId, userAgent });
@@ -25,7 +25,7 @@ export function createAccessToken({
   // Build and return the new access token
   const accessToken = signJwt(
     { userId: user._id, isAdmin: user.isAdmin, sessionId: session._id },
-    { expiresIn: config.get<string>("accessTokenTtl") } // 15 minutes
+    { expiresIn: config.accessTokenTtl } // 15 minutes
   );
   return accessToken;
 }
