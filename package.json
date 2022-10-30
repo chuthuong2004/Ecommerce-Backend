@@ -10,7 +10,7 @@
     "npm": "4.6.1"
   },
   "scripts": {
-    "start": "nodemon --config nodemon.json src/index.ts -p $PORT",
+    "start": "nodemon --config nodemon.json src/index.ts",
     "build": "tsc"
   },
   "dependencies": {
