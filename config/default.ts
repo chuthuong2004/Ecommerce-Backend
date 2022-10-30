@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const PORT = process.env.PORT || 1337;
-const config = {
+export default {
   port: PORT,
   host: "localhost",
   dbUri:
@@ -33,4 +33,3 @@ const config = {
     secure: false,
   },
 };
-export default config;
