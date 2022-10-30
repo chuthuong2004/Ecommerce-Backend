@@ -5,11 +5,14 @@
   "main": "index.js",
   "author": "van thuong",
   "license": "MIT",
-  "scripts": {
-    "dev": "nodemon --config nodemon.json src/index.ts",
-    "postinstall": "tsc",
-    "start": "node build/index.js"
-  },
+  "engine": {
+    "node": "5.0.0",
+    "npm": "4.6.1"
+    },
+    "scripts": {
+      "start": "nodemon --config nodemon.json src/index.ts -p $PORT",
+      "build": "tsc"
+    },
   "dependencies": {
     "bcrypt": "^5.0.1",
     "config": "^3.3.7",
