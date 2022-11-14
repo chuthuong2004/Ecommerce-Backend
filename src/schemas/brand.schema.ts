@@ -2,6 +2,8 @@ import { object, string } from "yup";
 const payload = {
   body: object({
     name: string().required("Vui lòng nhập tên brand !"),
+    logo: string().notRequired(),
+    image: string().notRequired(),
   }),
 };
 const params = {
@@ -14,7 +16,11 @@ export const createBrandSchema = object({
 });
 export const updateBrandSchema = object({
   ...params,
-  ...payload,
+  body: object({
+    name: string().notRequired(),
+    logo: string().notRequired(),
+    image: string().notRequired(),
+  }),
 });
 export const getBrandSchema = object({
   ...params,

@@ -5,6 +5,7 @@ import { ProductDocument } from "./product.model";
 export interface BrandDocument extends mongoose.Document {
   name: string;
   logo: string;
+  image: string;
   history: string;
   products: Array<ProductDocument["_id"]>;
   slug: string;
@@ -21,6 +22,7 @@ const BrandSchema = new mongoose.Schema<BrandDocument>(
       },
     ],
     logo: { type: String },
+    image: { type: String },
     history: { type: String },
     slug: { type: String, unique: true, slug: "name" },
   },

@@ -183,9 +183,9 @@ export async function addAddress(
     const user = await getUser({ _id: userId });
     if (user?.addresses?.length === 0) {
       addressInput.isDefault = true;
-      user.firstName = addressInput.firstName;
-      user.lastName = addressInput.lastName;
-      user.phone = addressInput.phone;
+      if (!user.firstName) user.firstName = addressInput.firstName;
+      if (!user.lastName) user.lastName = addressInput.lastName;
+      if (!user.phone) user.phone = addressInput.phone;
       await user.save();
     }
     const addressItem = user?.addresses?.find(
@@ -226,6 +226,12 @@ export async function updateAddress(
         message: "Không tìm thấy người dùng !",
       };
     }
+    const existAddressDefault = user.addresses?.find(
+      (address) => address.isDefault && String(address._id) !== addressId
+    );
+    if (!existAddressDefault) {
+      addressUpdate.isDefault = true;
+    }
     const address = user.addresses?.find(
       (item: IAddress) => String(item._id) === addressId
     );
@@ -260,9 +266,6 @@ export async function updateAddress(
           {
             $set: {
               "addresses.$.isDefault": true,
-              firstName: addressUpdate.firstName,
-              lastName: addressUpdate.lastName,
-              phone: addressUpdate.phone,
             },
           }
         );

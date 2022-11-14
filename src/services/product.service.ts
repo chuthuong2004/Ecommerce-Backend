@@ -42,7 +42,9 @@ export async function getAllProduct(
 ): Promise<Array<CatalogDocument>> {
   try {
     const features = new APIFeatures(
-      ProductModel.find().populate({ path: "brand", select: "-products" }),
+      ProductModel.find()
+        .populate({ path: "brand", select: "-products" })
+        .populate("category"),
       query
     )
       .paginating()
@@ -56,7 +58,7 @@ export async function getAllProduct(
 }
 export async function getProduct(filter: FilterQuery<ProductDocument>) {
   try {
-    console.log(filter);
+    // console.log(filter);
 
     const product = await ProductModel.findOne(filter)
       .populate("brand")
@@ -180,7 +182,7 @@ export async function handleFavorite(
 export async function deleteProduct(productId: string) {
   try {
     const deleteProduct = await ProductModel.delete({ _id: productId });
-    console.log(deleteProduct);
+    // console.log(deleteProduct);
     return deleteProduct;
   } catch (error) {
     throw error;
@@ -189,7 +191,7 @@ export async function deleteProduct(productId: string) {
 export async function restoreProduct(productId: string) {
   try {
     const restoreProduct = await ProductModel.restore({ _id: productId });
-    console.log(restoreProduct);
+    // console.log(restoreProduct);
     return restoreProduct;
   } catch (error) {
     throw error;

@@ -1,11 +1,11 @@
 import mongoose, { Types } from "mongoose";
 import bcrypt from "bcrypt";
-import config from "config";
 import { stdSerializers } from "pino";
 import { CartDocument } from "./cart.model";
 import { OrderDocument } from "./order.model";
 import { IColor, ProductDocument } from "./product.model";
 import { ReviewDocument } from "./review.model";
+import config from "./../config/default";
 
 export interface IFavorite {
   product: ProductDocument["_id"];
@@ -78,7 +78,7 @@ const UserSchema = new mongoose.Schema<UserDocument>(
     },
     firstName: { type: String },
     lastName: { type: String },
-    phone: { type: String, required: true },
+    phone: { type: String },
     isAdmin: { type: Boolean, default: false },
     avatar: { type: String },
     cart: {
@@ -136,7 +136,7 @@ UserSchema.pre("save", async function (next: any) {
   // only hash the password if it has been modified (or is new)
   if (!user.isModified("password")) return next();
   // Random additional data
-  const salt = await bcrypt.genSalt(config.get<number>("saltWorkFactor"));
+  const salt = await bcrypt.genSalt(config.saltWorkFactor);
   const hash = await bcrypt.hashSync(user.password, salt);
 
   // Replace the password with the hash

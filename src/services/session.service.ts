@@ -38,7 +38,7 @@ export async function reIssueAccessToken({
 }) {
   // Decode the refresh token
   const { decoded } = verifyJwt(refreshToken);
-  console.log(decoded);
+  // console.log(decoded);
 
   if (!decoded || !get(decoded, "sessionId")) return false;
 

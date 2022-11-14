@@ -22,16 +22,16 @@ const deserializeUser = async (
     return next();
   }
   if (expired && refreshToken) {
-    console.log("25");
+    // console.log("25");
 
     const newAccessToken = await reIssueAccessToken({ refreshToken });
-    console.log("ass", newAccessToken);
+    // console.log("ass", newAccessToken);
 
     if (newAccessToken) {
       // Add the new access token to the response header
       res.setHeader("x-access-token", newAccessToken);
       const { decoded } = verifyJwt(newAccessToken);
-      console.log("123123", decoded);
+      // console.log("123123", decoded);
 
       // @ts-ignore
       req.user = decoded;

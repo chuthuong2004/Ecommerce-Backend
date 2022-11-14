@@ -12,6 +12,7 @@ import express from "express";
 import {
   createUserSessionHandler,
   getUserSessionHandler,
+  googleLoginHandler,
   invalidateUserSessionHandler,
 } from "../controllers/session.controller";
 import {
@@ -46,6 +47,7 @@ router.post(
   createUserSessionHandler
 );
 
+router.post("/auth/google", googleLoginHandler);
 // * LOGOUT
 // DELETE /api/sessions
 router.delete("/users/logout", requiresUser, invalidateUserSessionHandler);

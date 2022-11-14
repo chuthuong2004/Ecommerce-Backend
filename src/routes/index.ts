@@ -8,6 +8,8 @@ import brand from "./brand.route";
 import cart from "./cart.route";
 import order from "./order.route";
 import review from "./review.route";
+import conversation from "./conversation.route";
+import message from "./message.route";
 const router = express.Router();
 
 router.use("/api/v1", user);
@@ -19,4 +21,6 @@ router.use("/api/v1", brand);
 router.use("/api/v1", cart);
 router.use("/api/v1", order);
 router.use("/api/v1", review);
+router.use("/api/v1", conversation);
+router.use("/api/v1", message);
 export default router;

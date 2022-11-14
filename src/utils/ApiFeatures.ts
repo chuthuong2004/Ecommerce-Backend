@@ -26,7 +26,7 @@ class APIFeatures {
     var page = this.queryString.page ? this.queryString.page * 1 : 1;
     var limit = this.queryString.limit ? this.queryString.limit * 1 : 0;
     var skip = (page - 1) * limit;
-    log.info({ page, limit, skip });
+    // log.info({ page, limit, skip });
     this.query = this.query.limit(limit).skip(skip);
     return this;
   }
@@ -56,7 +56,7 @@ class APIFeatures {
   }
   public filtering() {
     const queryObj = { ...this.queryString };
-    console.log(queryObj);
+    // console.log(queryObj);
 
     const excludedField = [
       EQueryOption.PAGE,
@@ -65,15 +65,15 @@ class APIFeatures {
       EQueryOption.SEARCH,
     ];
     excludedField.forEach((item) => delete queryObj[item]);
-    console.log(queryObj);
+    // console.log(queryObj);
     let queryStr = JSON.stringify(queryObj);
-    console.log(queryStr);
+    // console.log(queryStr);
     queryStr = queryStr.replace(
       /\b(gte|gt|lt|lte|regex)\b/g,
       (match) => "$" + match
     );
     const newQuery = JSON.parse(queryStr);
-    console.log(newQuery);
+    // console.log(newQuery);
     this.query = this.query.find(newQuery);
     return this;
   }
