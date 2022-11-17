@@ -40,6 +40,47 @@ export interface UserDocument extends mongoose.Document {
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
+export interface IAddressResponse {
+  firstName: string;
+  lastName?: string;
+  phone?: string;
+  province?: string;
+  district?: string;
+  ward?: string;
+  address?: string;
+  _id?: string;
+}
+export interface IAddressUserResponse extends IAddressResponse {
+  isDefault: boolean;
+}
+export interface IFavoriteResponse {
+  product: ProductDocument;
+  size: string | number;
+  color: string;
+  colorId: IColor["_id"];
+  quantity: number;
+  _id: string;
+}
+export interface IUserResponse {
+  _id: string;
+  email: string;
+  username: string;
+  phone?: string;
+  isAdmin: boolean;
+  avatar?: string;
+  firstName?: string;
+  lastName?: string;
+  gender?: EGender;
+  dateOfBirth?: string;
+  orders?: string[];
+  reviews?: string[];
+  favorites?: IFavoriteResponse[];
+  addresses?: IAddressUserResponse[];
+  cart?: string;
+  __v?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
 export interface IAddress {
   firstName: string;
   lastName: string;

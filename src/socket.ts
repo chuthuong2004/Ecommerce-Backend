@@ -2,97 +2,93 @@ import { Server as HTTPServer } from "http";
 import { Server, Socket } from "socket.io";
 import { v4 } from "uuid";
 import log from "./logger";
+import { IMessageResponse } from "./models/message.model";
+import { IUserResponse } from "./models/user.model";
 
 const EVENTS = {
   connection: "connection",
-  handshake: "handshake",
+  CLIENT: {
+    ADD_USER: "add_user",
+    SEND_MESSAGE: "send_message",
+    KEY_DOWN: "key_down",
+  },
+  SERVER: {
+    GET_USERS: "get_users",
+    GET_MESSAGE: "get_message",
+    LOADING: "loading",
+  },
+};
+interface IUserSocket {
+  userId: string;
+  socketId: string;
+}
+let users: IUserSocket[] = [];
+const addUser = (userId: string, socketId: string) => {
+  users.forEach((user) => {
+    if (user.userId === userId) {
+      user.socketId = socketId;
+    }
+  });
+  !users.some((user) => user.userId === userId) &&
+    users.push({ userId, socketId });
+};
+const removeUser = (socketId: string) => {
+  users = users.filter((user: IUserSocket) => user.socketId !== socketId);
+};
+
+const getUser = (userId: string) => {
+  return users.find((user: IUserSocket) => user.userId === userId);
 };
 function socket({ io }: { io: Server }) {
   log.info(`Sockets enabled`);
   io.on(EVENTS.connection, (socket: Socket) => {
     log.info(`User connected ${socket.id}`);
-    // socket.on(EVENTS.handshake, (uid: string, users: string[]) => {
-    //   console.log(uid);
-    // });
+    socket.on(EVENTS.CLIENT.ADD_USER, (userId: string) => {
+      addUser(userId, socket.id);
+      io.emit(EVENTS.SERVER.GET_USERS, users);
+      console.log("add", users);
+    });
+    // server received message
+    socket.on(
+      EVENTS.CLIENT.SEND_MESSAGE,
+      ({
+        message,
+        receiverId,
+      }: {
+        message: IMessageResponse;
+        receiverId: string;
+      }) => {
+        console.log({ message, receiverId });
+        const socketIdReceiver: string = getUser(receiverId)?.socketId || "";
+        const socketIdSender: string =
+          getUser(message.sender._id)?.socketId || "";
+        console.log("socketIdReceiver: ", socketIdReceiver);
+
+        io.to([socketIdReceiver, socketIdSender]).emit(
+          EVENTS.SERVER.GET_MESSAGE,
+          {
+            message,
+            receiverId,
+          }
+        );
+      }
+    );
+    // server received event keydown
+    socket.on(
+      EVENTS.CLIENT.KEY_DOWN,
+      (data: {
+        isKeyPressedDown: boolean;
+        senderId: string;
+        receiverId: string;
+        conversationId: string;
+      }) => {
+        console.log(data);
+        const userReceived = getUser(data.receiverId);
+        if (userReceived) {
+          io.to(userReceived.socketId).emit(EVENTS.SERVER.LOADING, data);
+        }
+      }
+    );
   });
 }
 export default socket;
-
-// export class ServerSocket {
-//   public static instance: ServerSocket;
-//   public io: Server;
-//   //  ['adsdfdsfsd']
-//   public users: { [uid: string]: string };
-//   constructor(server: HTTPServer) {
-//     ServerSocket.instance = this;
-//     this.users = {};
-//     this.io = new Server(server, {
-//       serveClient: false,
-//       pingInterval: 10000,
-//       pingTimeout: 5000,
-//       cookie: false,
-//       cors: {
-//         origin: "http://localhost:3000",
-//       },
-//     });
-//     this.io.on("connect", this.StartListeners);
-//     console.log("Socket IO started");
-//   }
-
-//   StartListeners = (socket: Socket) => {
-//     console.log("Message received from " + socket.id);
-//     socket.on(
-//       "handshake",
-//       (callback: (uid: string, users: string[]) => void) => {
-//         console.log("Handshake received from " + socket.id);
-//         const reconnected = Object.values(this.users).includes(socket.id);
-//         if (reconnected) {
-//           console.log("This user has reconnected");
-//           const uid = this.GetUidFromSocketId(socket.id);
-//           const users = Object.values(this.users);
-//           if (uid) {
-//             console.log("Sending callback for reconnect...");
-//             callback(uid, users);
-//             return;
-//           }
-//         }
-//         // Generate new user
-//         const uid = v4();
-//         this.users[uid] = socket.id;
-//         const users = Object.values(this.users);
-//         console.log("Sending callback for handshake...");
-//         callback(uid, users);
-
-//         this.SendMessage(
-//           "user_connected",
-//           users.filter((id) => id !== socket.id)
-//         ),
-//           users;
-//       }
-//     );
-//     socket.on("disconnect", () => {
-//       console.log("Disconnect received from " + socket.id);
-//       const uid = this.GetUidFromSocketId(socket.id);
-//       if (uid) {
-//         delete this.users[uid];
-//         const users = Object.values(this.users);
-//         this.SendMessage("user_disconnected", users, uid);
-//       }
-//     });
-//   };
-//   GetUidFromSocketId = (id: string) =>
-//     Object.keys(this.users).find((uid) => this.users[uid] === id);
-
-//   /**
-//    *
-//    * @param name The name of the event, ex: handshake
-//    * @param users List of socket id's
-//    * @param payload any information needed by the user for state updates
-//    */
-//   SendMessage = (name: string, users: string[], payload?: Object) => {
-//     console.log("Emmitting event: " + name);
-//     users.forEach((id) =>
-//       payload ? this.io.to(id).emit(name, payload) : this.io.to(id).emit(name)
-//     );
-//   };
-// }

@@ -1,4 +1,5 @@
 import mongoose, { Types } from "mongoose";
+import { IUserResponse } from "./user.model";
 
 export interface MessageDocument extends mongoose.Document {
   conversation: Types.ObjectId;
@@ -10,6 +11,19 @@ export interface MessageDocument extends mongoose.Document {
   createdAt: Date;
   updatedAt: Date;
 }
+export interface IMessageResponse {
+  _id: string;
+  conversation: string;
+  sender: IUserResponse;
+  text: string;
+  image?: string;
+  seen: boolean;
+  createdAt: string;
+  updatedAt: string;
+  seenAt?: string;
+  __v: number;
+}
+
 const MessageSchema = new mongoose.Schema<MessageDocument>(
   {
     conversation: {

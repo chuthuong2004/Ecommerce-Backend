@@ -1,5 +1,6 @@
 import { DocumentDefinition } from "mongoose";
 import MessageModel, { MessageDocument } from "../models/message.model";
+import APIFeatures, { QueryOption } from "../utils/ApiFeatures";
 
 export async function createMessage(
   input: DocumentDefinition<MessageDocument>
@@ -15,13 +16,40 @@ export async function createMessage(
     throw error;
   }
 }
-export async function getMessage(
-  conversationId: string
+
+export async function getMessages(
+  conversationId: string,
+  query: QueryOption
 ): Promise<MessageDocument[]> {
   try {
-    return await MessageModel.find({
-      conversation: conversationId,
-    }).populate({
+    const features = new APIFeatures(
+      MessageModel.find(
+        {
+          conversation: conversationId,
+        },
+        {}
+      ).populate({
+        path: "sender",
+        select: "-password -orders -reviews -favorites -addresses -cart",
+      }),
+      query
+    )
+      .paginating()
+      .sorting()
+      .searching()
+      .filtering();
+    return await features.query;
+  } catch (error) {
+    throw error;
+  }
+}
+export async function getLatestMessage(conversationId: string) {
+  try {
+    return await MessageModel.findOne(
+      { conversation: conversationId },
+      {},
+      { sort: { createdAt: -1 } }
+    ).populate({
       path: "sender",
       select: "-password -orders -reviews -favorites -addresses -cart",
     });

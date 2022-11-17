@@ -33,7 +33,7 @@ router.get(
   getMessageLatestHandler
 );
 // * UPDATE MESSAGE SEEN
-router.get(
+router.put(
   "/messages/seen/:conversationId/:receiverId",
   [requiresUser, validateRequest(updateMessageSchema)],
   updateMessageHandler

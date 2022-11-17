@@ -1,3 +1,4 @@
+import { FilterQuery, QueryOptions, UpdateQuery } from "mongoose";
 import ConversationModel, {
   ConversationDocument,
 } from "../models/conversation.model";
@@ -16,7 +17,7 @@ export async function createConversation(
     throw error;
   }
 }
-export async function getConversation(
+export async function getMyConversations(
   userId: string
 ): Promise<ConversationDocument[]> {
   try {
@@ -28,6 +29,25 @@ export async function getConversation(
         path: "members",
         select: "-password -orders -reviews -favorites -addresses -cart",
       });
+  } catch (error) {
+    throw error;
+  }
+}
+export async function updateConversation(
+  filter: FilterQuery<ConversationDocument>,
+  update: UpdateQuery<ConversationDocument>,
+  options: QueryOptions
+): Promise<ConversationDocument | undefined> {
+  try {
+    const updatedConversation = await ConversationModel.findOneAndUpdate(
+      filter,
+      update,
+      options
+    );
+    return await updatedConversation?.populate({
+      path: "members",
+      select: "-password -orders -reviews -favorites -addresses -cart",
+    });
   } catch (error) {
     throw error;
   }
