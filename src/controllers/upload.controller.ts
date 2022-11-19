@@ -22,10 +22,14 @@ export function uploadProductHandler(
   next: NextFunction
 ) {
   try {
-    return res.json({
-      message: "Đã upload nhiều hình ảnh thành công !",
-      files: req.files,
-    });
+    console.log(req.file, req.files);
+
+    if (req.files)
+      return res.json({
+        message: "Đã upload nhiều hình ảnh thành công !",
+        data: req.files,
+      });
+    next(new HttpException(400, "Upload hình ảnh thất bại !"));
   } catch (error: any) {
     next(new HttpException(500, error.message));
   }

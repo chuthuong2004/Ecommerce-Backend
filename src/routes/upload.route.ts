@@ -10,8 +10,7 @@ import {
   uploadProductHandler,
   uploadSingleHandler,
 } from "../controllers/upload.controller";
-import { requiresAdmin, requiresUser } from "../middlewares";
-
+import { requiresAdmin, requiresUser, validateRequest } from "../middlewares";
 const router = express.Router();
 
 type DestinationCallback = (error: Error | null, destination: string) => void;
@@ -27,6 +26,7 @@ enum FieldName {
   IMAGE_LARGE = "images",
   IMAGE_MEDIUM = "imageMedium",
   IMAGE_SMALL = "imageSmall",
+  IMAGE_MESSAGES = "imageMessage",
 }
 const destination = {
   [FieldName.AVATAR]: "avatars",
@@ -37,6 +37,7 @@ const destination = {
   [FieldName.IMAGE_LARGE]: "products",
   [FieldName.IMAGE_SMALL]: "products",
   [FieldName.IMAGE_MEDIUM]: "products",
+  [FieldName.IMAGE_MESSAGES]: "messages",
 };
 export const fileStorage = multer.diskStorage({
   destination: (
@@ -93,11 +94,13 @@ router.post(
 );
 router.post(
   "/upload/brands",
+  requiresAdmin,
   upload.single(FieldName.IMAGE_BRAND),
   uploadSingleHandler
 );
 router.post(
   "/upload/products",
+  requiresAdmin,
   upload.fields([
     { name: FieldName.IMAGE_LARGE, maxCount: 50 },
     { name: FieldName.IMAGE_SMALL, maxCount: 1 },
@@ -106,7 +109,15 @@ router.post(
   uploadProductHandler
 );
 router.post(
+  "/upload/messages",
+  requiresUser,
+  upload.fields([{ name: FieldName.IMAGE_MESSAGES, maxCount: 10 }]),
+  uploadProductHandler
+);
+router.post(
   "/upload/catalogs",
+
+  requiresAdmin,
   upload.fields([
     { name: FieldName.IMAGE_MEN, maxCount: 1 },
     { name: FieldName.IMAGE_WOMAN, maxCount: 1 },

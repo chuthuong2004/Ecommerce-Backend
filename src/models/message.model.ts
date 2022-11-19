@@ -5,7 +5,7 @@ export interface MessageDocument extends mongoose.Document {
   conversation: Types.ObjectId;
   sender: Types.ObjectId;
   text: string;
-  image: string;
+  images: string[];
   seen: boolean;
   seenAt: Date;
   createdAt: Date;
@@ -16,7 +16,7 @@ export interface IMessageResponse {
   conversation: string;
   sender: IUserResponse;
   text: string;
-  image?: string;
+  images?: string[];
   seen: boolean;
   createdAt: string;
   updatedAt: string;
@@ -37,7 +37,7 @@ const MessageSchema = new mongoose.Schema<MessageDocument>(
       required: true,
     },
     text: { type: String },
-    image: { type: String },
+    images: [{ type: String }],
     seen: { type: Boolean, default: false },
     seenAt: { type: Date },
   },
