@@ -35,6 +35,8 @@ export interface UserDocument extends mongoose.Document {
   reviews?: Types.DocumentArray<ReviewDocument["_id"]>;
   favorites?: Types.Array<IFavorite>;
   addresses?: Types.Array<IAddress>;
+  loggedOut: boolean;
+  loggedOutAt?: Date;
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
@@ -80,6 +82,8 @@ export interface IUserResponse {
   __v?: number;
   createdAt?: string;
   updatedAt?: string;
+  loggedOut: boolean;
+  loggedOutAt?: string;
 }
 export interface IAddress {
   firstName: string;
@@ -160,6 +164,8 @@ const UserSchema = new mongoose.Schema<UserDocument>(
     ],
     gender: { type: String, enum: Object.values(EGender) },
     dateOfBirth: { type: String },
+    loggedOut: { type: Boolean, default: true },
+    loggedOutAt: { type: Date },
   },
   { timestamps: true }
 );

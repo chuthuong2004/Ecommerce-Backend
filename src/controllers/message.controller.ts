@@ -19,7 +19,7 @@ export async function createMessageHandler(
     //     conversation: req.body.conversation,
     //     sender: req.body.sender,
     //     text: req.body.text || '',
-    //     image: req.body.image || '',
+    //     image: req.body.images || [],
     // }
     const savedMessage = await createMessage(req.body);
     res.json(savedMessage);
@@ -34,7 +34,11 @@ export async function getMessageHandler(
 ) {
   try {
     const messages = await getMessages(req.params.conversationId, req.query);
-    res.json(messages);
+    res.json({
+      countDocument: messages.length,
+      resultPerPage: req.query.page ? req.query.page * 1 : 0,
+      data: messages.reverse(),
+    });
   } catch (error: any) {
     return next(new HttpException(500, error.message));
   }

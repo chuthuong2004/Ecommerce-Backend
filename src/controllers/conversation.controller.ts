@@ -16,7 +16,8 @@ export async function createConversationHandler(
     const { receiverId } = req.body;
     const newConversation = await createConversation(
       receiverId,
-      get(req, "user.userId")
+      get(req, "user.userId"),
+      get(req, "user.isAdmin")
     );
     res.json(newConversation);
   } catch (error: any) {

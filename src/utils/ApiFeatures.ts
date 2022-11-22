@@ -7,6 +7,7 @@ export interface QueryOption {
   page?: number;
   sort?: string;
   search?: string;
+  skip?: number;
 }
 enum EQueryOption {
   SORT = "sort",
@@ -26,6 +27,9 @@ class APIFeatures {
     var page = this.queryString.page ? this.queryString.page * 1 : 1;
     var limit = this.queryString.limit ? this.queryString.limit * 1 : 0;
     var skip = (page - 1) * limit;
+    if (this.queryString.skip) {
+      skip = this.queryString.skip;
+    }
     // log.info({ page, limit, skip });
     this.query = this.query.limit(limit).skip(skip);
     return this;

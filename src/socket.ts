@@ -4,18 +4,22 @@ import { v4 } from "uuid";
 import log from "./logger";
 import { IMessageResponse } from "./models/message.model";
 import { IUserResponse } from "./models/user.model";
+import { updateUser } from "./services/user.service";
 
 const EVENTS = {
   connection: "connection",
+  disconnect: "disconnect",
   CLIENT: {
     ADD_USER: "add_user",
     SEND_MESSAGE: "send_message",
     KEY_DOWN: "key_down",
+    LOGOUT: "logout",
   },
   SERVER: {
     GET_USERS: "get_users",
     GET_MESSAGE: "get_message",
     LOADING: "loading",
+    DISCONNECTED: "disconnected",
   },
 };
 interface IUserSocket {
@@ -24,20 +28,20 @@ interface IUserSocket {
 }
 let users: IUserSocket[] = [];
 const addUser = (userId: string, socketId: string) => {
-  users.forEach((user) => {
-    if (user.userId === userId) {
-      user.socketId = socketId;
-    }
-  });
-  !users.some((user) => user.userId === userId) &&
+  // users.forEach((user) => {
+  //   if (user.userId === userId) {
+  //     user.socketId = socketId;
+  //   }
+  // });
+  !users.some((user) => user.userId === userId && user.socketId === socketId) &&
     users.push({ userId, socketId });
 };
 const removeUser = (socketId: string) => {
   users = users.filter((user: IUserSocket) => user.socketId !== socketId);
 };
 
-const getUser = (userId: string) => {
-  return users.find((user: IUserSocket) => user.userId === userId);
+const getUsers = (userId: string) => {
+  return users.filter((user: IUserSocket) => user.userId !== userId);
 };
 function socket({ io }: { io: Server }) {
   log.info(`Sockets enabled`);
@@ -59,12 +63,16 @@ function socket({ io }: { io: Server }) {
         receiverId: string;
       }) => {
         console.log({ message, receiverId });
-        const socketIdReceiver: string = getUser(receiverId)?.socketId || "";
-        const socketIdSender: string =
-          getUser(message.sender._id)?.socketId || "";
-        console.log("socketIdReceiver: ", socketIdReceiver);
-
-        io.to([socketIdReceiver, socketIdSender]).emit(
+        const receiveUsers = getUsers(receiverId);
+        const senders = getUsers(message.sender._id);
+        console.log("socketIdReceivers: ", receiveUsers);
+        const socketIdReceivers = receiveUsers.map(
+          (socketUser) => socketUser.socketId
+        );
+        const socketIdsSenders = senders.map(
+          (socketUser) => socketUser.socketId
+        );
+        io.to([...socketIdReceivers, ...socketIdsSenders]).emit(
           EVENTS.SERVER.GET_MESSAGE,
           {
             message,
@@ -83,12 +91,26 @@ function socket({ io }: { io: Server }) {
         conversationId: string;
       }) => {
         console.log(data);
-        const userReceived = getUser(data.receiverId);
-        if (userReceived) {
-          io.to(userReceived.socketId).emit(EVENTS.SERVER.LOADING, data);
+
+        const socketIdReceivers = getUsers(data.senderId).map(
+          (socketUser) => socketUser.socketId
+        );
+        // ! console.log();
+
+        if (socketIdReceivers.length > 0) {
+          io.to([...socketIdReceivers]).emit(EVENTS.SERVER.LOADING, data);
         }
       }
     );
+
+    // on log out
+    socket.on(EVENTS.CLIENT.LOGOUT, ({ userId: string }) => {});
+    socket.on(EVENTS.disconnect, (socket) => {
+      console.log("disconnect: ", socket);
+      console.log(socket);
+      console.log("users: ", users);
+      io.emit(EVENTS.SERVER.DISCONNECTED);
+    });
   });
 }
 export default socket;

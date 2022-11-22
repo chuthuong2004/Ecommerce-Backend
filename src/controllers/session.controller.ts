@@ -5,7 +5,11 @@ import {
   findSessions,
   updateSession,
 } from "../services/session.service";
-import { getUser, validatePassword } from "../services/user.service";
+import {
+  getUser,
+  updateUser,
+  validatePassword,
+} from "../services/user.service";
 import { signJwt } from "../utils/jwt.utils";
 import { get } from "lodash";
 import HttpException from "../utils/httpException";
@@ -71,12 +75,12 @@ export async function googleLoginHandler(
         email: tokenPayload.email,
         firstName: tokenPayload.family_name,
         lastName: tokenPayload.given_name,
-        avatar: tokenPayload.picture,
         password: "123456",
         username: tokenPayload.email?.split("@")[0].replace(".", ""),
       });
-      await user.save();
     }
+    user.loggedOut = false;
+    await user.save();
     // Create a session
     const session = await createSession(user._id, req.get("user-agent") || "");
 
@@ -107,6 +111,10 @@ export async function invalidateUserSessionHandler(
 ) {
   try {
     const sessionId = get(req, "user.sessionId");
+    const updatedUser = await updateUser(
+      { _id: get(req, "user.userId") },
+      { loggedOut: true, loggedOutAt: new Date() }
+    );
     const session = await updateSession({ _id: sessionId }, { valid: false });
     if (session) return res.json({ message: "Đăng xuất thành công !" });
     next(new HttpException(400, "Không tìm thấy session"));

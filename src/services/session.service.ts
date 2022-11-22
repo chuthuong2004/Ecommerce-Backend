@@ -62,6 +62,8 @@ export async function updateSession(
   query: FilterQuery<SessionDocument>,
   update: UpdateQuery<SessionDocument>
 ) {
+  // update loggedOutAt User
+
   return Session.updateOne(query, update);
 }
 // * FIND SESSION

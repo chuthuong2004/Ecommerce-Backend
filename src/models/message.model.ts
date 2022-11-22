@@ -5,11 +5,11 @@ export interface MessageDocument extends mongoose.Document {
   conversation: Types.ObjectId;
   sender: Types.ObjectId;
   text: string;
-  images: string[];
-  seen: boolean;
-  seenAt: Date;
-  createdAt: Date;
-  updatedAt: Date;
+  images?: string[];
+  seen?: boolean;
+  seenAt?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 export interface IMessageResponse {
   _id: string;

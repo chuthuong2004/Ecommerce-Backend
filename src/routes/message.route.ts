@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import {
   createMessageHandler,
   getMessageHandler,
@@ -6,6 +6,7 @@ import {
   updateMessageHandler,
 } from "../controllers/message.controller";
 import { requiresUser, validateRequest } from "../middlewares";
+import MessageModel from "./../models/message.model";
 import {
   createMessageSchema,
   getMessageSchema,
@@ -37,6 +38,17 @@ router.put(
   "/messages/seen/:conversationId/:receiverId",
   [requiresUser, validateRequest(updateMessageSchema)],
   updateMessageHandler
+);
+router.delete(
+  "/message/:conversationId",
+  async (req: Request, res: Response) => {
+    try {
+      const deleted = await MessageModel.deleteMany({
+        conversation: req.params.conversationId,
+      });
+      return res.json(deleted);
+    } catch (error) {}
+  }
 );
 
 export default router;

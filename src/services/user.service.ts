@@ -46,6 +46,8 @@ export async function validatePassword({
     if (!isValid) {
       return false;
     }
+    user.loggedOut = false;
+    await user.save();
     return omit(user.toJSON(), "password");
   } catch (error) {
     throw error;
