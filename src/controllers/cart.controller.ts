@@ -88,6 +88,7 @@ export async function addItemToCartHandler(
     next(new HttpException(500, error.message));
   }
 }
+
 export async function removeItemFromCartHandler(
   req: Request,
   res: Response,

@@ -19,6 +19,7 @@ import {
   addAddressHandler,
   changePasswordHandler,
   createUserHandler,
+  deleteAddressHandler,
   deleteUserHandler,
   forgotPasswordHandler,
   getAllUserHandler,
@@ -31,8 +32,8 @@ import {
 
 const router = express.Router();
 
-// * REGISTER USER - OK
-// POST /api/user
+// * REGISTER USER
+// POST /api/v1/users/register
 router.post(
   "/users/register",
   validateRequest(createUserSchema),
@@ -40,63 +41,92 @@ router.post(
 );
 
 // * LOGIN USER
-// POST /api/session
+// POST /api/v1/users/login
 router.post(
   "/users/login",
   validateRequest(createUserSessionSchema),
   createUserSessionHandler
 );
 
+// * LOGIN WITH GOOGLE
+// POST /api/v1/auth/google
 router.post("/auth/google", googleLoginHandler);
-// * LOGOUT
-// DELETE /api/sessions
-router.delete("/users/logout", requiresUser, invalidateUserSessionHandler);
-// * GET THE USER'S SESSIONS
-// GET /api/sessions
-router.get("/sessions", requiresUser, getUserSessionHandler);
 
-// FORGOT PASSWORD
+// * LOGOUT
+// DELETE /api/v1/users/logout
+router.delete("/users/logout", requiresUser, invalidateUserSessionHandler);
+
+// * FORGOT PASSWORD
+// POST /api/v1/password/forgot
 router.post(
   "/password/forgot",
   validateRequest(createForgotPassword),
   forgotPasswordHandler
 );
+
 // * CHANGE PASSWORD
+// POST /api/v1/password/update
 router.post(
   "/password/update",
   [requiresUser, validateRequest(createChangePasswordSchema)],
   changePasswordHandler
 );
 
-// * GET USER DETAILS
+// * GET PROFILE
+// GET /api/v1/me
 router.get("/me", requiresUser, getProfileHandler);
 
-//  UPDATE USER
+// * UPDATE PROFILE
+// PUT /api/v1/me/update
 router.put(
   "/me/update",
   [requiresUser, validateRequest(updateUserSchema)],
   updateProfileHandler
 );
 
-// ADD ADDRESS
+// * ADD ADDRESS
+// POST /api/v1/me/addresses/add
 router.post(
   "/me/addresses/add",
   [requiresUser, validateRequest(addAddressSchema)],
   addAddressHandler
 );
+
+// * UPDATE ADDRESS
+// POST /api/v1/me/addresses/:addressId
 router.put(
   "/me/addresses/:addressId",
   [requiresUser, validateRequest(updateAddressSchema)],
   updateAddressHandler
 );
 
+// * DELETE ADDRESS
+// POST /api/v1/me/addresses/:addressId
+router.delete(
+  "/me/addresses/:addressId",
+  [requiresUser, validateRequest(updateAddressSchema)],
+  deleteAddressHandler
+);
+
 // =============================ADMIN====================================
-// * GET ALL USER ---- Admin
+
+// * GET THE USER'S SESSIONS ---- ADMIN
+// GET /api/v1/sessions
+router.get("/sessions", requiresAdmin, getUserSessionHandler);
+
+// * GET ALL USER ---- ADMIN
+// GET /api/v1/admin/users
 router.get("/admin/users", requiresAdmin, getAllUserHandler);
-// * GET A USER ---- Admin
+
+// * GET A USER ---- ADMIN
+// GET /api/v1/admin/user/:userId
 router.get("/admin/user/:userId", requiresAdmin, getUserHandler);
-// * UPDATE USER ROLE ----- Admin
+
+// * UPDATE USER ROLE ----- ADMIN
+// PUT /api/v1/admin/user/:userId
 router.put("/admin/user/:userId", requiresAdmin, updateUserRoleHandler);
-// * DELETE USER ----- Admin
+
+// * DELETE USER ----- ADMIN
+// DELETE /api/v1/admin/user/:userId
 router.delete("/admin/user/:userId", requiresAdmin, deleteUserHandler);
 export default router;

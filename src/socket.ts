@@ -65,7 +65,6 @@ function socket({ io }: { io: Server }) {
         console.log({ message, receiverId });
         const receiveUsers = getUsers(receiverId);
         const senders = getUsers(message.sender._id);
-        console.log("socketIdReceivers: ", receiveUsers);
         const socketIdReceivers = receiveUsers.map(
           (socketUser) => socketUser.socketId
         );

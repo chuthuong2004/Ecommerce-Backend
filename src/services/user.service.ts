@@ -296,3 +296,18 @@ export async function updateAddress(
     throw error;
   }
 }
+export async function deleteAddress(
+  addressId: string,
+  userId: string
+): Promise<UserDocument | null> {
+  try {
+    const updatedUser = await updateUser(
+      { _id: userId },
+      { $pull: { addresses: addressId } },
+      { new: true }
+    );
+    return updatedUser;
+  } catch (error) {
+    throw error;
+  }
+}

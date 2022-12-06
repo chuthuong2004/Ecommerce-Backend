@@ -61,14 +61,16 @@ export async function createReview(
         };
       }
     );
-    inputReviews.forEach(async (reviewItem: FilterQuery<ReviewDocument>) => {
+    // inputReviews.forEach(async (reviewItem: FilterQuery<ReviewDocument>) => {
+    for (const reviewItem of inputReviews) {
       const newReview = new ReviewModel(reviewItem);
-      const [review, listReviewOfProduct] = await Promise.all([
-        newReview.save(),
-        getAllReview({ product: reviewItem.product }, {}),
-      ]);
+      await newReview.save();
+      const listReviewOfProduct = await getAllReview(
+        { product: reviewItem.product },
+        {}
+      );
       let rate: number = 0;
-      if (listReviewOfProduct.length === 0) rate = reviewItem.star;
+      if (listReviewOfProduct.length === 1) rate = reviewItem.star;
       else {
         const totalStarReviewProduct: number = listReviewOfProduct.reduce(
           (acc: number, review: ReviewDocument) => acc + review.star,
@@ -79,12 +81,12 @@ export async function createReview(
 
       await Promise.all([
         updateProduct(reviewItem.product, {
-          $push: { reviews: review._id },
+          $push: { reviews: newReview._id },
           $set: { rate: rate },
         }),
-        updateUser({ _id: userId }, { $push: { reviews: review._id } }),
+        updateUser({ _id: userId }, { $push: { reviews: newReview._id } }),
       ]);
-    });
+    }
     // order đã đánh giá
     order.isEvaluated = true;
     order.save();

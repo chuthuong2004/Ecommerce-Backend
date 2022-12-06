@@ -22,42 +22,47 @@ import {
 } from "../schemas/product.schema";
 const router = express.Router();
 
-// * CREATE PRODUCT --- DONE
+// * CREATE PRODUCT ---- ADMIN
+// POST /api/v1/admin/product/new
 router.post(
   "/admin/product/new",
   [requiresAdmin, validateRequest(createProductSchema)],
   createProductHandler
 );
 
+// * GET ALL PRODUCTS
+// GET /api/v1/products
 router.get("/products", getAllProductHandler);
 
-// * GET PRODUCT DETAIL --- DONE
+// * GET PRODUCT DETAILS BY ID
+// GET /api/v1/product/:productId
 router.get(
   "/product/:productId",
   validateRequest(getProductSchema),
   getProductHandler
 );
-router.get(
-  "/product/slug/:slug",
-  // validateRequest(getProductSchema),
-  getProductBySlugHandler
-);
+// * GET PRODUCT DETAILS BY SLUG
+// GET /api/v1/product/slug/:slug
+router.get("/product/slug/:slug", getProductBySlugHandler);
 
-// * UPDATE PRODUCT ---- ADMIN ---DONE
+// * UPDATE PRODUCT ---- ADMIN
+// PUT /api/v1/admin/product/:productId
 router.put(
   "/admin/product/:productId",
   [requiresAdmin, validateRequest(updateProductSchema)],
   updateProductHandler
 );
 
-// * UPDATE PRODUCTS FAVORITES
-// * add favorite --- DONE
+// * ADD FAVORITE PRODUCTS
+// PUT /api/v1/products/favorite/add/:productId
 router.put(
   "/products/favorite/add/:productId",
   [requiresUser, validateRequest(updateProductSchema)],
   addFavoriteHandler
 );
-// * remove favorite --- DONE
+
+// * REMOVE FAVORITE PRODUCTS
+// PUT /api/v1/products/favorite/remove/:productId
 router.put(
   "/products/favorite/remove/:productId",
   [requiresUser, validateRequest(updateProductSchema)],
@@ -65,6 +70,7 @@ router.put(
 );
 
 // * RESTORE PRODUCT
+// PATCH /api/v1/admin/product/restore/:productId
 router.patch(
   "/admin/product/restore/:productId",
   [requiresAdmin, validateRequest(restoreProductSchema)],
@@ -72,13 +78,15 @@ router.patch(
 );
 
 // * SOFT DELETE PRODUCT
+// DELETE /api/v1/admin/product/:productId
 router.delete(
   "/admin/product/:productId",
   [requiresAdmin, validateRequest(deleteProductSchema)],
   deleteProductHandler
 );
 
-// ! DELETE PRODUCT ---- delete image
+// * DELETE PRODUCT
+// DELETE /api/v1/admin/product/force/:productId
 router.delete(
   "/admin/product/force/:productId",
   [requiresAdmin, validateRequest(deleteProductSchema)],

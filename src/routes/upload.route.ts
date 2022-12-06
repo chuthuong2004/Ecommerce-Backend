@@ -7,7 +7,7 @@ import moment from "moment";
 import log from "../logger";
 import {
   uploadCatalogHandler,
-  uploadProductHandler,
+  uploadMultiHandler,
   uploadSingleHandler,
 } from "../controllers/upload.controller";
 import { requiresAdmin, requiresUser, validateRequest } from "../middlewares";
@@ -106,13 +106,13 @@ router.post(
     { name: FieldName.IMAGE_SMALL, maxCount: 1 },
     { name: FieldName.IMAGE_MEDIUM, maxCount: 1 },
   ]),
-  uploadProductHandler
+  uploadMultiHandler
 );
 router.post(
   "/upload/messages",
   requiresUser,
   upload.fields([{ name: FieldName.IMAGE_MESSAGES, maxCount: 10 }]),
-  uploadProductHandler
+  uploadMultiHandler
 );
 router.post(
   "/upload/catalogs",

@@ -6,6 +6,7 @@ import {
   addAddress,
   changePassword,
   createUser,
+  deleteAddress,
   deleteUser,
   forgotPassword,
   getAllUsers,
@@ -198,6 +199,29 @@ export async function updateAddressHandler(
       next(new HttpException(result.statusCode, result.message));
     }
     res.json({ message: "Cập nhật địa chỉ thành công !" });
+  } catch (error: any) {
+    next(new HttpException(500, error.message));
+  }
+}
+export async function deleteAddressHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const deletedAddress = await deleteAddress(
+      req.params.addressId,
+      get(req, "user.userId")
+    );
+    if (!deletedAddress) {
+      return next(
+        new HttpException(404, "Không tìm thấy thông tin địa chỉ của bạn.")
+      );
+    } else {
+      return next(
+        new HttpException(200, "Đã xóa địa chỉ giao hàng của bạn thành công.")
+      );
+    }
   } catch (error: any) {
     next(new HttpException(500, error.message));
   }

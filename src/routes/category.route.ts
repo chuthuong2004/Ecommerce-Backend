@@ -16,10 +16,12 @@ import {
 } from "../schemas/category.schema";
 const router = express.Router();
 
-// * GET ALL CATEGORY --- PAGINATION
+// * GET ALL CATEGORY
+// GET api/v1/categories
 router.get("/categories", getAllCategoryHandler);
 
 // * GET CATEGORY DETAILS
+// GET api/v1/category/:categoryId
 router.get(
   "/category/:categoryId",
   validateRequest(getCategorySchema),
@@ -27,6 +29,7 @@ router.get(
 );
 
 // * CREATE CATEGORY --- ADMIN
+// POST api/v1/admin/category/new
 router.post(
   "/admin/category/new",
   [requiresAdmin, validateRequest(createCategorySchema)],
@@ -34,13 +37,15 @@ router.post(
 );
 
 // * UPDATE CATEGORY --- ADMIN
+// PUT api/v1/admin/category/:categoryId
 router.put(
   "/admin/category/:categoryId",
   [requiresAdmin, validateRequest(updateCategorySchema)],
   updateCategoryHandler
 );
 
-// ! DELETE CATEGORY --- ADMIN
+// * DELETE CATEGORY --- ADMIN
+// DELETE api/v1/admin/category/:categoryId
 router.delete(
   "/admin/category/:categoryId",
   [requiresAdmin, validateRequest(deleteCategorySchema)],

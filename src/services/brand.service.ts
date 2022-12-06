@@ -28,13 +28,20 @@ export async function getAllBrand(
 }
 export async function getBrand(brandId: string) {
   try {
-    const brand = await BrandModel.findById(brandId).populate({
-      path: "products",
-      populate: {
-        path: "brand",
-        select: "-products",
-      },
-    });
+    const brand = await BrandModel.findById(brandId)
+      .populate({
+        path: "products",
+        populate: {
+          path: "brand",
+          select: "-products",
+        },
+      })
+      .populate({
+        path: "products",
+        populate: {
+          path: "category",
+        },
+      });
     return brand;
   } catch (error) {
     throw error;

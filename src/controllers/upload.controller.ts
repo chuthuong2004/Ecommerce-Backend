@@ -16,7 +16,7 @@ export function uploadSingleHandler(
     next(new HttpException(500, error.message));
   }
 }
-export function uploadProductHandler(
+export function uploadMultiHandler(
   req: Request,
   res: Response,
   next: NextFunction

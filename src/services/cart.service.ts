@@ -4,6 +4,7 @@ import ProductModel, { IColor, ProductDocument } from "../models/product.model";
 import UserModel from "../models/user.model";
 import APIFeatures, { QueryOption } from "../utils/ApiFeatures";
 import { ISize } from "./../models/product.model";
+import { getProduct } from "./product.service";
 import { updateUser } from "./user.service";
 
 export async function getAllCart(
@@ -88,6 +89,49 @@ export async function updateCart(
     throw error;
   }
 }
+// export async function addMoreItemToCart(cartItems: ICartItem[], userId) {
+//   try {
+//     console.log("cartItems", cartItems);
+
+//     const products = await Promise.all(
+//       cartItems.map((item) => getProduct({ _id: item.product }))
+//     );
+//     console.log("products", products);
+
+//     const newCartItems = cartItems.map((item, i) => {
+//       const product = products.find(
+//         (product) => String(product?._id) === item.product
+//       );
+//       console.log("có", product);
+
+//       const image: string | undefined = findColorOfProduct(
+//         product?.colors,
+//         item.color
+//       )?.images[0];
+//       return {
+//         ...item,
+//         image: image ? image : "",
+//         quantity: item.quantity ? item.quantity : 1,
+//       };
+//     })
+//     return newCartItems;
+//     // const cart: CartDocument | null = await getCart({ user: userId });
+//     // if (!cart) {
+//     //   // nếu user chưa có cart thì thêm mới 1 cart cho user
+//     //   const newCart = new CartModel({
+//     //     user: userId,
+//     //     cartItems: newCartItems,
+//     //   });
+//     //   await newCart.save(); // create new cart
+//     //   await updateUser({ _id: userId }, { cart: newCart._id }); // add cart id cho user
+//     //   return await getCart({ user: userId });
+//     // }
+//     // nếu cart tồn tại thì update số lượng product trong cart
+//     // return await handleUpdateCart(cart, userId, cartItem);
+//   } catch (error) {
+//     throw error;
+//   }
+// }
 export async function addItemToCart(
   cartItem: ICartItem,
   userId: string

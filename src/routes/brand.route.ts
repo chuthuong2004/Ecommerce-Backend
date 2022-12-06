@@ -16,26 +16,32 @@ import {
 
 const router = express.Router();
 
-// * CREATE CATALOG
+// * CREATE BRAND ---- ADMIN
+// POST /api/v1/admin/brand/new
 router.post(
   "/admin/brand/new",
   [requiresAdmin, validateRequest(createBrandSchema)],
   createBrandHandler
 );
-// * GET ALL CATALOG --- PAGINATION
+
+// * GET ALL BRAND
+// GET /api/v1/brands
 router.get("/brands", getAllBrandHandler);
 
-// * GET CATALOG DETAILS
+// * GET BRAND DETAILS
+// GET /api/v1/brand/:brandId
 router.get("/brand/:brandId", validateRequest(getBrandSchema), getBrandHandler);
 
-// * UPDATE CATALOG
+// * UPDATE BRAND
+// PUT /api/v1/admin/brand/:brandId
 router.put(
   "/admin/brand/:brandId",
   [requiresAdmin, validateRequest(updateBrandSchema)],
   updateBrandHandler
 );
 
-// * DELETE CATALOG
+// * DELETE BRAND
+// DELETE /api/v1/admin/brand/:brandId
 router.delete(
   "/admin/brand/:brandId",
   [requiresAdmin, validateRequest(deleteBrandSchema)],

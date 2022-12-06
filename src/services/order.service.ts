@@ -159,7 +159,12 @@ export async function updateStatusOrder(
   orderStatus: EOrderStatus
 ) {
   try {
-    const order = await getOrder({ _id: orderId });
+    let order;
+    if (orderId.includes("ECO")) {
+      order = await getOrder({ orderId: orderId });
+    } else {
+      order = await getOrder({ _id: orderId });
+    }
     if (!order)
       return {
         statusCode: 404,
