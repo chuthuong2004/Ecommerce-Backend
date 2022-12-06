@@ -4,7 +4,11 @@ dotenv.config();
 const PORT = process.env.PORT || 1337;
 const config = {
   port: PORT,
-  corsOrigin: ["http://localhost:3000", "http://localhost:3001"],
+  corsOrigin: [
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "https://koga-clothes.vercel.app",
+  ],
   dbUri:
     "mongodb+srv://chuthuong1080:105870820196Thuong@cluster0.zy4fa.mongodb.net/chuthuong-online?retryWrites=true&w=majority",
   saltWorkFactor: 10,
