@@ -109,7 +109,7 @@ export async function createOrder(
       email: user?.email || "",
       message: `
         <div>Xin chào quý khách ${newOrder.deliveryInformation.firstName} ${newOrder.deliveryInformation.lastName}</div>
-        <div>Cảm ơn bạn đã mua hàng tại <a href="http://192.168.1.5:3000/">www.chuthuongonline.vn</a></div>
+        <div>Cảm ơn bạn đã mua hàng tại <a href="https://koga-clothes.vercel.app">Koga Clothes/</a></div>
         <div>Chúng tôi xin thông báo, đơn hàng <b>${newOrder.orderId}</b> đã được tiếp nhận và đang trong quá trình xử lý.</div>
 
       `,
