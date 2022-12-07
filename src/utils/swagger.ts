@@ -35,7 +35,7 @@ function swaggerDocs(app: Express, port: number) {
   // Swagger page
   app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
   //   Docs in JSON Format
-  app.get("docs.json", (req: Request, res: Response) => {
+  app.get("/docs.json", (req: Request, res: Response) => {
     res.setHeader("Content-Type", "application/json");
     res.send(swaggerSpec);
     log.info(`Docs available at http://localhost:${port}/docs`);
