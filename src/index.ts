@@ -11,6 +11,7 @@ import config from "./config/default";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import socket from "./socket";
+import swaggerDocs from "./utils/swagger";
 const port = config.port as number;
 
 const app = express();
@@ -39,4 +40,5 @@ httpServer.listen(port, () => {
   connect();
   socket({ io });
   // new ServerSocket(httpServer);
+  swaggerDocs(app, port);
 });

@@ -1,4 +1,43 @@
 import { array, number, object, string } from "yup";
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     CreateProductInput:
+ *       type: object
+ *       required:
+ *        - name
+ *        - price
+ *        - description
+ *        - colors
+ *        - brand
+ *        - category
+ *        - gender
+ *       properties:
+ *         name:
+ *           type: string
+ *           default: Name of product
+ *         description:
+ *           type: string
+ *           default: Description of product
+ *         price:
+ *           type: number
+ *           default: 1500000
+ *         brand:
+ *           type: string
+ *           default: Id of brand
+ *         category:
+ *           type: string
+ *           default: id of category
+ *         gender:
+ *           type: string
+ *           default: Nam
+ *         colors:
+ *           type: array
+ *           default: [{imageMedium: '/public/products/filename', imageSmall: '/public/products/filename', images: ['/public/products/filename'], sizes: [{size: 'XL', quantity:50}], colorName: 'green'}]
+ */
+
 const payload = {
   body: object({
     gender: string().required("gender is required"),
@@ -6,15 +45,6 @@ const payload = {
     brand: string().required("brand is required"),
     description: string().required("description is required"),
     colors: array().min(1).required("array colors is required"),
-    // .of(
-    // object({
-    // star: number()
-    // .required("star is required")
-    // .min(1, "Giá trị nhỏ nhất của star là 1")
-    // .max(5, "Giá trị lớn nhất của star là 5"),
-    // content: string().required("content is required"),
-    // orderItemId: string().required("orderItemId is required"),
-    // }).required()
     price: number().required("price is required !"),
     name: string().required("name is required !"),
   }),

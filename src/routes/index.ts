@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import user from "./user.route";
 import product from "./product.route";
 import catalog from "./catalog.route";
@@ -12,15 +12,31 @@ import conversation from "./conversation.route";
 import message from "./message.route";
 const router = express.Router();
 
-router.use("/api/v1", user);
-router.use("/api/v1", product);
-router.use("/api/v1", catalog);
-router.use("/api/v1", category);
-router.use("/api/v1", upload);
-router.use("/api/v1", brand);
-router.use("/api/v1", cart);
-router.use("/api/v1", order);
-router.use("/api/v1", review);
-router.use("/api/v1", conversation);
-router.use("/api/v1", message);
+/**
+ * @openapi
+ * /healthcheck:
+ *  get:
+ *     tags:
+ *     - Healthcheck
+ *     description: Responds if the app is up and running
+ *     responses:
+ *       200:
+ *         description: App is up and running
+ */
+router.get("/healthcheck", (req: Request, res: Response) =>
+  res.sendStatus(200)
+);
+router.use("/api/v1", [
+  user,
+  product,
+  catalog,
+  category,
+  upload,
+  brand,
+  cart,
+  order,
+  review,
+  conversation,
+  message,
+]);
 export default router;

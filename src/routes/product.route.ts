@@ -32,10 +32,45 @@ router.post(
 
 // * GET ALL PRODUCTS
 // GET /api/v1/products
+/**
+ * @openapi
+ * '/api/v1/products':
+ *  get:
+ *     tags:
+ *     - Products
+ *     summary: Get all products
+ *     responses:
+ *      200:
+ *        description: Success
+ *      409:
+ *        description: Conflict
+ *      400:
+ *        description: Bad request
+ *      500:
+ *        description: Server error
+ */
 router.get("/products", getAllProductHandler);
 
 // * GET PRODUCT DETAILS BY ID
 // GET /api/v1/product/:productId
+/**
+ * @openapi
+ * '/api/v1/product/{productId}':
+ *  get:
+ *     tags:
+ *     - Products
+ *     summary: Get a single product by the productId
+ *     parameters:
+ *      - name: productId
+ *        in: path
+ *        description: The id of the product
+ *        required: true
+ *     responses:
+ *       200:
+ *         description: Success
+ *       404:
+ *         description: Product not found
+ */
 router.get(
   "/product/:productId",
   validateRequest(getProductSchema),
@@ -43,6 +78,24 @@ router.get(
 );
 // * GET PRODUCT DETAILS BY SLUG
 // GET /api/v1/product/slug/:slug
+/**
+ * @openapi
+ * '/api/v1/product/slug/{slug}':
+ *  get:
+ *     tags:
+ *     - Products
+ *     summary: Get a single product by the slug
+ *     parameters:
+ *      - name: slug
+ *        in: path
+ *        description: The slug of the product
+ *        required: true
+ *     responses:
+ *       200:
+ *         description: Success
+ *       404:
+ *         description: Product not found
+ */
 router.get("/product/slug/:slug", getProductBySlugHandler);
 
 // * UPDATE PRODUCT ---- ADMIN
@@ -92,12 +145,4 @@ router.delete(
   [requiresAdmin, validateRequest(deleteProductSchema)],
   forceDestroyProductHandler
 );
-router.put("/updateMany", async (req, res) => {
-  try {
-    await ProductModel.updateMany({ gender: "woman" }, { gender: "women" });
-    res.send("ok");
-  } catch (error) {
-    res.status(500).json({ error: error });
-  }
-});
 export default router;

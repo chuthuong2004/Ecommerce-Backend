@@ -162,7 +162,10 @@ const UserSchema = new mongoose.Schema<UserDocument>(
         isDefault: { type: Boolean, default: false },
       },
     ],
-    gender: { type: String, enum: Object.values(EGender) },
+    gender: {
+      type: String,
+      enum: Object.values(EGender),
+    },
     dateOfBirth: { type: String },
     loggedOut: { type: Boolean, default: true },
     loggedOutAt: { type: Date },

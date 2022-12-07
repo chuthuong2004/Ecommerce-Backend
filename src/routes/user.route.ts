@@ -8,7 +8,7 @@ import {
   updateAddressSchema,
   updateUserSchema,
 } from "../schemas/user.schema";
-import express from "express";
+import express, { Request, Response } from "express";
 import {
   createUserSessionHandler,
   getUserSessionHandler,
@@ -34,6 +34,33 @@ const router = express.Router();
 
 // * REGISTER USER
 // POST /api/v1/users/register
+/**
+ * @openapi
+ * '/api/v1/users/register':
+ *  post:
+ *     tags:
+ *     - User
+ *     summary: Register a user
+ *     requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *           schema:
+ *              $ref: '#/components/schemas/CreateUserInput'
+ *     responses:
+ *      200:
+ *        description: Success
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/CreateUserResponse'
+ *      409:
+ *        description: Conflict
+ *      400:
+ *        description: Bad request
+ *      500:
+ *        description: Server error
+ */
 router.post(
   "/users/register",
   validateRequest(createUserSchema),
@@ -42,6 +69,33 @@ router.post(
 
 // * LOGIN USER
 // POST /api/v1/users/login
+/**
+ * @openapi
+ * '/api/v1/users/login':
+ *  post:
+ *     tags:
+ *     - User
+ *     summary: Login user
+ *     requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *           schema:
+ *              $ref: '#/components/schemas/LoginUserInput'
+ *     responses:
+ *      200:
+ *        description: Success
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/CreateUserResponse'
+ *      409:
+ *        description: Conflict
+ *      400:
+ *        description: Bad request
+ *      500:
+ *        description: Server error
+ */
 router.post(
   "/users/login",
   validateRequest(createUserSessionSchema),

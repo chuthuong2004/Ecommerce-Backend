@@ -1,4 +1,74 @@
 import { object, string, ref } from "yup";
+
+/**
+ * @openapi
+ * components:
+ *  schemas:
+ *    CreateUserInput:
+ *      type: object
+ *      required:
+ *        - email
+ *        - password
+ *        - phone
+ *      properties:
+ *        email:
+ *          type: string
+ *          default: vanthuong.dao2004@gmail.com
+ *        password:
+ *          type: string
+ *          default: 123456
+ *        phone:
+ *          type: string
+ *          default: "0986432588"
+ *    CreateUserResponse:
+ *      type: object
+ *      properties:
+ *        email:
+ *          type: string
+ *        username:
+ *          type: string
+ *        phone:
+ *          type: string
+ *        isAdmin:
+ *          type: boolean
+ *        orders:
+ *          type: array
+ *          items:
+ *            type: object
+ *        reviews:
+ *          type: array
+ *          items:
+ *            type: object
+ *        favorites:
+ *          type: array
+ *          items:
+ *            type: object
+ *        addresses:
+ *          type: array
+ *          items:
+ *            type: object
+ *        loggedOut:
+ *          type: boolean
+ *        _id:
+ *          type: string
+ *        createdAt:
+ *          type: string
+ *        updatedAt:
+ *          type: string
+ *    LoginUserInput:
+ *      type: object
+ *      required:
+ *        - email
+ *        - password
+ *      properties:
+ *        email:
+ *          type: string
+ *          default: vanthuong.dao2004@gmail.com
+ *        password:
+ *          type: string
+ *          default: 123456
+ */
+
 const payloadAddress = {
   body: object({
     address: string().required("Vui lòng nhập địa chỉ"),

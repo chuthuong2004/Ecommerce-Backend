@@ -26,10 +26,45 @@ router.post(
 
 // * GET ALL BRAND
 // GET /api/v1/brands
+/**
+ * @openapi
+ * '/api/v1/brands':
+ *  get:
+ *     tags:
+ *     - Brands
+ *     summary: Get all brands
+ *     responses:
+ *      200:
+ *        description: Success
+ *      409:
+ *        description: Conflict
+ *      400:
+ *        description: Bad request
+ *      500:
+ *        description: Server error
+ */
 router.get("/brands", getAllBrandHandler);
 
 // * GET BRAND DETAILS
 // GET /api/v1/brand/:brandId
+/**
+ * @openapi
+ * '/api/v1/brand/{brandId}':
+ *  get:
+ *     tags:
+ *     - Brands
+ *     summary: Get a single brand by the brandId
+ *     parameters:
+ *      - name: brandId
+ *        in: path
+ *        description: The id of the brand
+ *        required: true
+ *     responses:
+ *       200:
+ *         description: Success
+ *       404:
+ *         description: Brand not found
+ */
 router.get("/brand/:brandId", validateRequest(getBrandSchema), getBrandHandler);
 
 // * UPDATE BRAND
