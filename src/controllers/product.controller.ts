@@ -14,7 +14,6 @@ import { get } from "lodash";
 import { IFavorite } from "../models/user.model";
 import HttpException from "../utils/httpException";
 import { ProductDocument } from "../models/product.model";
-import log from "./../logger/index";
 
 // * CREATE PRODUCT --- DONE
 export async function createProductHandler(
@@ -211,23 +210,16 @@ export async function searchProductHandler(
   next: NextFunction
 ) {
   try {
-    const searchValues: string[] = removeVietnameseTones(
-      req.query.search?.trim() || ""
-    ).split(" "); // ['ao', 'quan']
-    log.info(searchValues);
+    const search = removeVietnameseTones(req.query.search?.trim() || "");
     const result = await getAllProduct({});
-    const products = result.filter((product: ProductDocument) => {
-      const found = searchValues.find((searchValue) => {
-        return (
-          removeVietnameseTones(product.name).includes(searchValue) ||
-          product.keywords?.find((word: string) =>
-            removeVietnameseTones(word).includes(searchValue)
-          )
-        );
-      });
-      return !!found;
-    });
-    if (!searchValues) {
+    const products = result.filter(
+      (product: ProductDocument) =>
+        removeVietnameseTones(product.name).includes(search) ||
+        product.keywords?.find((word: string) =>
+          removeVietnameseTones(word).includes(search)
+        )
+    );
+    if (!search) {
       return res.json({ data: result });
     }
     res.json({ data: products });
