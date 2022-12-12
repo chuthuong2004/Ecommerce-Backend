@@ -41,7 +41,7 @@ class APIFeatures {
   }
 
   public searching() {
-    var search = this.queryString.search;
+    var search = this.queryString.search?.trim();
     if (search) {
       this.query = this.query.find({
         $or: [
