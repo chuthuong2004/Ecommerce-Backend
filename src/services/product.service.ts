@@ -1,9 +1,7 @@
 import { DocumentDefinition, FilterQuery, UpdateQuery } from "mongoose";
 import { ActionFavorite } from "../controllers/product.controller";
-import log from "../logger";
 import BrandModel from "../models/brand.model";
 import CartModel from "../models/cart.model";
-import { CatalogDocument } from "../models/catalog.model";
 import CategoryModel from "../models/category.model";
 import ProductModel, { ProductDocument } from "../models/product.model";
 import ReviewModel from "../models/review.model";
@@ -39,7 +37,7 @@ export async function createProduct(
 }
 export async function getAllProduct(
   query: QueryOption
-): Promise<Array<CatalogDocument>> {
+): Promise<Array<ProductDocument>> {
   try {
     const features = new APIFeatures(
       ProductModel.find()

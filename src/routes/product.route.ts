@@ -10,6 +10,7 @@ import {
   removeFavoriteHandler,
   restoreProductHandler,
   updateProductHandler,
+  searchProductHandler,
 } from "../controllers/product.controller";
 import { requiresAdmin, requiresUser, validateRequest } from "../middlewares";
 import ProductModel from "../models/product.model";
@@ -145,4 +146,5 @@ router.delete(
   [requiresAdmin, validateRequest(deleteProductSchema)],
   forceDestroyProductHandler
 );
+router.get("/products/search", searchProductHandler);
 export default router;
