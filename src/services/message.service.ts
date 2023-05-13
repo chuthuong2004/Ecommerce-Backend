@@ -1,4 +1,4 @@
-import { DocumentDefinition } from "mongoose";
+import { DocumentDefinition, FilterQuery } from "mongoose";
 import MessageModel, { MessageDocument } from "../models/message.model";
 import APIFeatures, { QueryOption } from "../utils/ApiFeatures";
 
@@ -16,7 +16,11 @@ export async function createMessage(
     throw error;
   }
 }
-
+export async function getTotalMessage(
+  filter: FilterQuery<MessageDocument>
+): Promise<number> {
+  return await MessageModel.countDocuments(filter);
+}
 export async function getMessages(
   conversationId: string,
   query: QueryOption

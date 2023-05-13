@@ -8,6 +8,8 @@ const config = {
     "http://localhost:3000",
     "http://localhost:3001",
     "https://koga-clothes.vercel.app",
+    "http://192.168.1.4:3000",
+    "http://192.168.1.4:3001",
   ],
   dbUri:
     "mongodb+srv://chuthuong1080:105870820196Thuong@cluster0.zy4fa.mongodb.net/chuthuong-online?retryWrites=true&w=majority",

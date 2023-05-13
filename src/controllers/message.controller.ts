@@ -4,6 +4,7 @@ import {
   createMessage,
   getLatestMessage,
   getMessages,
+  getTotalMessage,
   updateMessage,
 } from "../services/message.service";
 import { QueryOption } from "../utils/ApiFeatures";
@@ -34,8 +35,11 @@ export async function getMessageHandler(
 ) {
   try {
     const messages = await getMessages(req.params.conversationId, req.query);
+    const countDocument = await getTotalMessage({
+      conversation: req.params.conversationId,
+    });
     res.json({
-      countDocument: messages.length,
+      countDocument: countDocument,
       resultPerPage: req.query.page ? req.query.page * 1 : 0,
       data: messages.reverse(),
     });
