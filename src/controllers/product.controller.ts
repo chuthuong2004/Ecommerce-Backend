@@ -211,7 +211,7 @@ export async function searchProductHandler(
 ) {
   try {
     const search = removeVietnameseTones(req.query.search?.trim() || "");
-    const result = await getAllProduct({});
+    const result = await getAllProduct(req.query);
     const products = result.filter(
       (product: ProductDocument) =>
         removeVietnameseTones(product.name).includes(search) ||
